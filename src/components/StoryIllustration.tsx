@@ -1007,67 +1007,140 @@ export const StoryIllustration: React.FC<StoryIllustrationProps> = ({
               <circle cx="0" cy="20" r="14" fill="#FDE047" opacity="0.4" className="animate-pulse" />
             </g>
 
-            {/* Bear & Friends celebrating around bed with bold outline */}
-            <g
-              transform="translate(100, 230)"
-              className="cursor-pointer hover:scale-105 transition-transform"
-              filter="url(#characterShadow)"
-              onClick={(e) => handleAnimalClick(e, 'bear', '🐻 Bear: "We found you!"')}
-            >
-              {/* Bear Body */}
-              <ellipse cx="0" cy="20" rx="38" ry="36" fill="#78350F" stroke="#0F172A" strokeWidth="2.8" />
-              {/* Bear Head */}
-              <circle cx="0" cy="-14" r="27" fill="#78350F" stroke="#0F172A" strokeWidth="2.8" />
-              {/* Round Ears */}
-              <circle cx="-22" cy="-32" r="10" fill="#78350F" stroke="#0F172A" strokeWidth="2.2" />
-              <circle cx="-22" cy="-32" r="5" fill="#B45309" />
-              <circle cx="22" cy="-32" r="10" fill="#78350F" stroke="#0F172A" strokeWidth="2.2" />
-              <circle cx="22" cy="-32" r="5" fill="#B45309" />
-              {/* Snout */}
-              <ellipse cx="0" cy="-8" rx="13" ry="9" fill="#FDE68A" stroke="#0F172A" strokeWidth="2" />
-              <polygon points="0,-12 -4,-7 4,-7" fill="#0F172A" />
-              {/* Eyes */}
-              <circle cx="-9" cy="-18" r="3" fill="#0F172A" />
-              <circle cx="-8" cy="-19" r="1" fill="#FFFFFF" />
-              <circle cx="9" cy="-18" r="3" fill="#0F172A" />
-              <circle cx="10" cy="-19" r="1" fill="#FFFFFF" />
+            {/* Colorful Celebration Bedroom Garland & Bunting */}
+            <g>
+              <path d="M 20 40 Q 250 85 480 40" stroke="#E2E8F0" strokeWidth="2" fill="none" />
+              {[
+                { x: 60, y: 48, c: '#F43F5E' },
+                { x: 110, y: 56, c: '#F59E0B' },
+                { x: 160, y: 62, c: '#10B981' },
+                { x: 210, y: 65, c: '#3B82F6' },
+                { x: 260, y: 65, c: '#8B5CF6' },
+                { x: 310, y: 62, c: '#EC4899' },
+                { x: 360, y: 56, c: '#F59E0B' },
+                { x: 410, y: 48, c: '#10B981' },
+              ].map((flag, idx) => (
+                <polygon
+                  key={idx}
+                  points={`${flag.x - 14},${flag.y - 4} ${flag.x + 14},${flag.y - 4} ${flag.x},${flag.y + 22}`}
+                  fill={flag.c}
+                  stroke="#0F172A"
+                  strokeWidth="1.2"
+                />
+              ))}
             </g>
 
-            {/* FINAL CAUGHT BUNNY (Jumping joyfully with heart sparkles!) with bold outlines */}
+            {/* Sparkle Stars & Confetti in Bedroom Air */}
+            <g opacity="0.85">
+              <text x="70" y="90" fontSize="18" className="select-none">✨</text>
+              <text x="390" y="85" fontSize="20" className="select-none">🌟</text>
+              <text x="120" y="130" fontSize="16" className="select-none">🎉</text>
+              <text x="360" y="140" fontSize="16" className="select-none">🎊</text>
+              <circle cx="85" cy="115" r="4" fill="#F43F5E" />
+              <circle cx="105" cy="80" r="3" fill="#3B82F6" />
+              <circle cx="395" cy="110" r="4" fill="#FACC15" />
+              <circle cx="420" cy="95" r="3" fill="#10B981" />
+              <rect x="75" y="135" width="6" height="6" fill="#F59E0B" transform="rotate(30 75 135)" />
+              <rect x="410" y="130" width="6" height="6" fill="#EC4899" transform="rotate(45 410 130)" />
+            </g>
+
+            {/* Warm Nightstand Lamp Left */}
+            <g transform="translate(65, 175)" filter="url(#softShadow)">
+              <rect x="-15" y="30" width="30" height="45" fill="#B45309" stroke="#451A03" strokeWidth="2" rx="2" />
+              <polygon points="-24,30 24,30 14,-5 -14,-5" fill="#FEF08A" stroke="#EAB308" strokeWidth="2" />
+              <circle cx="0" cy="12" r="14" fill="#FDE047" opacity="0.45" className="animate-pulse" />
+            </g>
+
+            {/* Cozy Bedroom Quilt Bed (Centered) */}
+            <g transform="translate(250, 195)" filter="url(#softShadow)">
+              {/* Wooden Headboard */}
+              <rect x="-140" y="-85" width="280" height="90" rx="12" fill="#92400E" stroke="#451A03" strokeWidth="3" />
+              <line x1="-120" y1="-85" x2="-120" y2="5" stroke="#78350F" strokeWidth="2" />
+              <line x1="120" y1="-85" x2="120" y2="5" stroke="#78350F" strokeWidth="2" />
+              <circle cx="-130" cy="-85" r="8" fill="#B45309" stroke="#451A03" strokeWidth="2" />
+              <circle cx="130" cy="-85" r="8" fill="#B45309" stroke="#451A03" strokeWidth="2" />
+
+              {/* Fluffy Bed Pillows */}
+              <ellipse cx="-70" cy="-30" rx="42" ry="22" fill="#FFFFFF" stroke="#CBD5E1" strokeWidth="2" />
+              <ellipse cx="70" cy="-30" rx="42" ry="22" fill="#FFFFFF" stroke="#CBD5E1" strokeWidth="2" />
+
+              {/* Colorful Patchwork Quilt Blanket */}
+              <rect x="-130" y="-5" width="260" height="115" rx="18" fill="#F472B6" stroke="#DB2777" strokeWidth="3" />
+              
+              {/* Quilt Pattern Patches */}
+              <rect x="-110" y="15" width="55" height="42" fill="#FDE047" opacity="0.9" rx="6" stroke="#EAB308" strokeWidth="1.5" />
+              <rect x="-45" y="15" width="55" height="42" fill="#67E8F9" opacity="0.9" rx="6" stroke="#0891B2" strokeWidth="1.5" />
+              <rect x="20" y="15" width="55" height="42" fill="#A7F3D0" opacity="0.9" rx="6" stroke="#059669" strokeWidth="1.5" />
+              
+              <rect x="-110" y="65" width="55" height="40" fill="#DDD6FE" opacity="0.9" rx="6" stroke="#8B5CF6" strokeWidth="1.5" />
+              <rect x="-45" y="65" width="55" height="40" fill="#FED7AA" opacity="0.9" rx="6" stroke="#EA580C" strokeWidth="1.5" />
+              <rect x="20" y="65" width="55" height="40" fill="#FECDD3" opacity="0.9" rx="6" stroke="#F43F5E" strokeWidth="1.5" />
+            </g>
+
+            {/* Cozy Slippers beside the bed right */}
+            <g transform="translate(410, 280)" filter="url(#softShadow)">
+              <ellipse cx="0" cy="0" rx="14" ry="7" fill="#F472B6" stroke="#0F172A" strokeWidth="1.5" />
+              <ellipse cx="16" cy="6" rx="14" ry="7" fill="#F472B6" stroke="#0F172A" strokeWidth="1.5" />
+              <circle cx="-5" cy="-2" r="3" fill="#FFFFFF" />
+              <circle cx="11" cy="4" r="3" fill="#FFFFFF" />
+            </g>
+
+            {/* ============================================================== */}
+            {/* THE STAR OF THE SHOW: BIG HAPPY BUNNY CAUGHT ON BED! */}
+            {/* ============================================================== */}
             <g
-              transform="translate(250, 170)"
-              className={`cursor-pointer transition-transform duration-300 ${bunnyBounced ? '-translate-y-8 scale-110' : 'animate-bounce'} ${highlightBunny ? 'filter drop-shadow-[0_0_14px_rgba(251,191,36,0.95)]' : ''}`}
+              transform="translate(250, 185)"
+              className={`cursor-pointer transition-transform duration-300 ${bunnyBounced ? '-translate-y-8 scale-110' : 'animate-bounce'} ${highlightBunny ? 'filter drop-shadow-[0_0_18px_rgba(251,191,36,0.95)]' : ''}`}
               onClick={handleBunnyClick}
               filter="url(#characterShadow)"
             >
-              {isQuestionMode && <circle cx="0" cy="-10" r="54" fill="#FDE047" opacity="0.4" className="animate-pulse" />}
+              {isQuestionMode && <circle cx="0" cy="-10" r="62" fill="#FDE047" opacity="0.5" className="animate-pulse" />}
 
-              {/* Big Celebration Heart */}
-              <text x="32" y="-35" fontSize="28" className="animate-ping select-none">💖</text>
+              {/* Giant Sparkling Heart Above Bunny */}
+              <text x="36" y="-55" fontSize="34" className="animate-pulse select-none">💖</text>
+              <text x="-56" y="-50" fontSize="24" className="animate-pulse select-none">✨</text>
 
-              {/* Ears spread wide in happiness */}
-              <ellipse cx="-18" cy="-50" rx="7.5" ry="27" fill="#FFFBEB" stroke="#0F172A" strokeWidth="2.5" transform="rotate(-20 -18 -50)" />
-              <ellipse cx="-18" cy="-50" rx="3.5" ry="19" fill="#F472B6" transform="rotate(-20 -18 -50)" />
-              <ellipse cx="18" cy="-50" rx="7.5" ry="27" fill="#FFFBEB" stroke="#0F172A" strokeWidth="2.5" transform="rotate(20 18 -50)" />
-              <ellipse cx="18" cy="-50" rx="3.5" ry="19" fill="#F472B6" transform="rotate(20 18 -50)" />
+              {/* Big, expressive bunny ears spread wide in joyous celebration */}
+              <ellipse cx="-24" cy="-62" rx="10" ry="34" fill="#FFFBEB" stroke="#0F172A" strokeWidth="2.8" transform="rotate(-22 -24 -62)" />
+              <ellipse cx="-24" cy="-62" rx="5" ry="24" fill="#F472B6" transform="rotate(-22 -24 -62)" />
+              <ellipse cx="24" cy="-62" rx="10" ry="34" fill="#FFFBEB" stroke="#0F172A" strokeWidth="2.8" transform="rotate(22 24 -62)" />
+              <ellipse cx="24" cy="-62" rx="5" ry="24" fill="#F472B6" transform="rotate(22 24 -62)" />
 
-              {/* Body */}
-              <ellipse cx="0" cy="15" rx="23" ry="25" fill="#FFFBEB" stroke="#0F172A" strokeWidth="2.8" />
+              {/* Round plump body snug on the bed */}
+              <ellipse cx="0" cy="22" rx="32" ry="30" fill="#FFFBEB" stroke="#0F172A" strokeWidth="3" />
+              <ellipse cx="0" cy="26" rx="20" ry="18" fill="#FEF3C7" />
 
-              {/* Raised Paws */}
-              <ellipse cx="-20" cy="-5" rx="9" ry="7" fill="#FFFBEB" stroke="#0F172A" strokeWidth="2.2" transform="rotate(-30 -20 -5)" />
-              <ellipse cx="20" cy="-5" rx="9" ry="7" fill="#FFFBEB" stroke="#0F172A" strokeWidth="2.2" transform="rotate(30 20 -5)" />
+              {/* Raised joyful front paws reaching out for a warm hug */}
+              <ellipse cx="-28" cy="-5" rx="11" ry="8" fill="#FFFBEB" stroke="#0F172A" strokeWidth="2.5" transform="rotate(-35 -28 -5)" />
+              <ellipse cx="28" cy="-5" rx="11" ry="8" fill="#FFFBEB" stroke="#0F172A" strokeWidth="2.5" transform="rotate(35 28 -5)" />
 
-              {/* Head */}
-              <circle cx="0" cy="-14" r="27" fill="#FFFBEB" stroke="#0F172A" strokeWidth="2.8" />
+              {/* Little cute back paws tucked underneath */}
+              <ellipse cx="-20" cy="48" rx="14" ry="9" fill="#FFFBEB" stroke="#0F172A" strokeWidth="2.5" />
+              <ellipse cx="20" cy="48" rx="14" ry="9" fill="#FFFBEB" stroke="#0F172A" strokeWidth="2.5" />
 
-              {/* Big Smiling Eyes & Rosy Cheeks */}
-              <path d="M -14 -16 Q -8 -22 -2 -16" stroke="#0F172A" strokeWidth="3" fill="none" strokeLinecap="round" />
-              <path d="M 2 -16 Q 8 -22 14 -16" stroke="#0F172A" strokeWidth="3" fill="none" strokeLinecap="round" />
-              <circle cx="-16" cy="-8" r="6" fill="#FDA4AF" opacity="0.85" />
-              <circle cx="16" cy="-8" r="6" fill="#FDA4AF" opacity="0.85" />
-              <path d="M -8 -8 Q 0 4 8 -8 Z" fill="#F43F5E" stroke="#0F172A" strokeWidth="1.5" />
-              <polygon points="0,-11 -3,-14 3,-14" fill="#F472B6" />
+              {/* Fluffy Bunny Head */}
+              <circle cx="0" cy="-16" r="34" fill="#FFFBEB" stroke="#0F172A" strokeWidth="3.2" />
+
+              {/* Big Happy Smiling Crescent Eyes */}
+              <path d="M -18 -18 Q -10 -27 -2 -18" stroke="#0F172A" strokeWidth="3.8" fill="none" strokeLinecap="round" />
+              <path d="M 2 -18 Q 10 -27 18 -18" stroke="#0F172A" strokeWidth="3.8" fill="none" strokeLinecap="round" />
+
+              {/* Rosy glowing cheeks */}
+              <circle cx="-20" cy="-8" r="8" fill="#FDA4AF" opacity="0.85" />
+              <circle cx="20" cy="-8" r="8" fill="#FDA4AF" opacity="0.85" />
+
+              {/* Open Joyful Laughing Mouth */}
+              <path d="M -10 -8 Q 0 8 10 -8 Z" fill="#F43F5E" stroke="#0F172A" strokeWidth="2" />
+              <path d="M -4 2 Q 0 6 4 2" fill="#FB7185" />
+
+              {/* Pink Nose */}
+              <polygon points="0,-12 -4,-16 4,-16" fill="#F472B6" />
+
+              {/* Whiskers */}
+              <line x1="-12" y1="-10" x2="-32" y2="-12" stroke="#0F172A" strokeWidth="1.5" strokeLinecap="round" />
+              <line x1="-12" y1="-6" x2="-30" y2="-2" stroke="#0F172A" strokeWidth="1.5" strokeLinecap="round" />
+              <line x1="12" y1="-10" x2="32" y2="-12" stroke="#0F172A" strokeWidth="1.5" strokeLinecap="round" />
+              <line x1="12" y1="-6" x2="30" y2="-2" stroke="#0F172A" strokeWidth="1.5" strokeLinecap="round" />
             </g>
           </g>
         )}
