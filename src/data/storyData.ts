@@ -218,9 +218,9 @@ export const STORY_PAGES: StoryPage[] = [
     text: 'Where is little Bunny?',
     keyWords: ['little', 'Bunny'],
     question: {
-      promptText: 'Select the correct sentence for this page:',
-      voicePrompt: 'Select the correct sentence! Where is little Bunny?',
-      targetHint: 'Look at the story sentence: Where is little Bunny?',
+      promptText: 'Select the sentence that matches the picture:',
+      voicePrompt: 'Look at the picture and select the matching sentence!',
+      targetHint: 'Hint: Look for little Bunny hiding behind the pink daisies!',
       choices: [
         {
           id: 'p1-s1',
@@ -273,9 +273,9 @@ export const STORY_PAGES: StoryPage[] = [
     text: 'Bunny runs into the forest!',
     keyWords: ['Bunny', 'runs', 'into', 'forest'],
     question: {
-      promptText: 'Select the correct sentence for this page:',
-      voicePrompt: 'Select the correct sentence! What does Bunny do?',
-      targetHint: 'Look at the story sentence: Bunny runs into the forest!',
+      promptText: 'Select the sentence that matches the picture:',
+      voicePrompt: 'Look at the picture and select the matching sentence!',
+      targetHint: 'Hint: Look where Bunny is dashing past the trail signpost!',
       choices: [
         {
           id: 'p2-s1',
@@ -332,9 +332,9 @@ export const STORY_PAGES: StoryPage[] = [
     text: 'Bunny is behind the tree.',
     keyWords: ['Bunny', 'behind', 'tree'],
     question: {
-      promptText: 'Select the correct sentence for this page:',
-      voicePrompt: 'Select the correct sentence! Where is Bunny hiding?',
-      targetHint: 'Look at the story sentence: Bunny is behind the tree.',
+      promptText: 'Select the sentence that matches the picture:',
+      voicePrompt: 'Look at the picture and select the matching sentence!',
+      targetHint: 'Hint: Look near the giant green oak tree!',
       choices: [
         {
           id: 'p3-s1',
@@ -387,9 +387,9 @@ export const STORY_PAGES: StoryPage[] = [
     text: 'Bunny is across the river.',
     keyWords: ['Bunny', 'across', 'river'],
     question: {
-      promptText: 'Select the correct sentence for this page:',
-      voicePrompt: 'Select the correct sentence! Where did Bunny hop?',
-      targetHint: 'Look at the story sentence: Bunny is across the river.',
+      promptText: 'Select the sentence that matches the picture:',
+      voicePrompt: 'Look at the picture and select the matching sentence!',
+      targetHint: 'Hint: Look across the blue river stepping stones!',
       choices: [
         {
           id: 'p4-s1',
@@ -446,9 +446,9 @@ export const STORY_PAGES: StoryPage[] = [
     text: 'Bunny is by the fence.',
     keyWords: ['Bunny', 'by', 'fence'],
     question: {
-      promptText: 'Select the correct sentence for this page:',
-      voicePrompt: 'Select the correct sentence! Where is Bunny in the cabin yard?',
-      targetHint: 'Look at the story sentence: Bunny is by the fence.',
+      promptText: 'Select the sentence that matches the picture:',
+      voicePrompt: 'Look at the picture and select the matching sentence!',
+      targetHint: 'Hint: Look by the wooden picket fence in the yard!',
       choices: [
         {
           id: 'p5-s1',
@@ -501,9 +501,9 @@ export const STORY_PAGES: StoryPage[] = [
     text: 'Bunny goes under the porch.',
     keyWords: ['Bunny', 'under', 'porch'],
     question: {
-      promptText: 'Select the correct sentence for this page:',
-      voicePrompt: 'Select the correct sentence! Where did Bunny duck under?',
-      targetHint: 'Look at the story sentence: Bunny goes under the porch.',
+      promptText: 'Select the sentence that matches the picture:',
+      voicePrompt: 'Look at the picture and select the matching sentence!',
+      targetHint: 'Hint: Look under the wooden porch steps of the cabin!',
       choices: [
         {
           id: 'p6-s1',
@@ -560,9 +560,9 @@ export const STORY_PAGES: StoryPage[] = [
     text: 'Bunny is in the basket.',
     keyWords: ['Bunny', 'in', 'basket'],
     question: {
-      promptText: 'Select the correct sentence for this page:',
-      voicePrompt: 'Select the correct sentence! Where is Bunny hiding in the room?',
-      targetHint: 'Look at the story sentence: Bunny is in the basket.',
+      promptText: 'Select the sentence that matches the picture:',
+      voicePrompt: 'Look at the picture and select the matching sentence!',
+      targetHint: 'Hint: Look inside the cozy woven basket in the room!',
       choices: [
         {
           id: 'p7-s1',
@@ -615,9 +615,9 @@ export const STORY_PAGES: StoryPage[] = [
     text: 'Caught you! Happy Bunny!',
     keyWords: ['caught', 'happy', 'Bunny'],
     question: {
-      promptText: 'Select the correct sentence for this page:',
-      voicePrompt: 'Select the correct sentence! What happens at the end?',
-      targetHint: 'Look at the story sentence: Caught you! Happy Bunny!',
+      promptText: 'Select the sentence that matches the picture:',
+      voicePrompt: 'Look at the picture and select the matching sentence!',
+      targetHint: 'Hint: Bunny is smiling happily in arms at last!',
       choices: [
         {
           id: 'p8-s1',

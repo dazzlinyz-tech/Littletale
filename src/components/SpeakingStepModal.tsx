@@ -17,7 +17,9 @@ export const SpeakingStepModal: React.FC<SpeakingStepModalProps> = ({
   onComplete,
   isCompleted = false,
 }) => {
+  const [hasListened, setHasListened] = useState(isCompleted);
   const [isPlayingModel, setIsPlayingModel] = useState(false);
+  const [modelWordIdx, setModelWordIdx] = useState<number>(-1);
   const [isRecording, setIsRecording] = useState(false);
   const [spokenWordIdx, setSpokenWordIdx] = useState<number>(-1);
   const [hasCompletedFullSentence, setHasCompletedFullSentence] = useState(isCompleted);
@@ -32,12 +34,23 @@ export const SpeakingStepModal: React.FC<SpeakingStepModalProps> = ({
   const recordingStartTimeRef = useRef<number>(0);
   const matchedWordsCountRef = useRef<number>(0);
   const pacingIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const modelPacingRef = useRef<NodeJS.Timeout | null>(null);
 
+  // Auto-play model audio when entering speaking step (learner must listen first!)
   useEffect(() => {
-    return () => {
-      stopAllCleanup();
-    };
-  }, []);
+    if (!isCompleted) {
+      setHasListened(false);
+      setSpokenWordIdx(-1);
+      setModelWordIdx(-1);
+      const timer = setTimeout(() => {
+        handlePlayModel();
+      }, 400);
+      return () => {
+        clearTimeout(timer);
+        stopAllCleanup();
+      };
+    }
+  }, [targetSentence, isCompleted]);
 
   const stopAllCleanup = () => {
     if (recognitionRef.current) {
@@ -50,21 +63,60 @@ export const SpeakingStepModal: React.FC<SpeakingStepModalProps> = ({
       clearInterval(pacingIntervalRef.current);
       pacingIntervalRef.current = null;
     }
+    if (modelPacingRef.current) {
+      clearInterval(modelPacingRef.current);
+      modelPacingRef.current = null;
+    }
   };
 
+  // STEP 1: Listen to Model Audio
   const handlePlayModel = () => {
     soundEngine.playPop();
+    stopAllCleanup();
     setIsPlayingModel(true);
-    setFeedbackMsg(null);
+    setModelWordIdx(0);
+    setFeedbackMsg({
+      type: 'hint',
+      text: '🎧 1단계: 원어민 발음을 귀 기울여 잘 들어보세요!',
+    });
+
+    // Pacing for word highlighting during model playback
+    let currentIdx = 0;
+    const intervalPerWord = 520;
+    modelPacingRef.current = setInterval(() => {
+      currentIdx++;
+      if (currentIdx < cleanWords.length) {
+        setModelWordIdx(currentIdx);
+      }
+    }, intervalPerWord);
+
     speakSentence(targetSentence, {
       rate: 0.85,
       pitch: 1.15,
-      onEnd: () => setIsPlayingModel(false),
+      onEnd: () => {
+        if (modelPacingRef.current) {
+          clearInterval(modelPacingRef.current);
+          modelPacingRef.current = null;
+        }
+        setIsPlayingModel(false);
+        setModelWordIdx(-1);
+        setHasListened(true);
+        setFeedbackMsg({
+          type: 'hint',
+          text: '✨ 잘 들었나요? 이제 [2단계: 따라 말하기 🎙️] 버튼을 누르고 문장을 말해보세요!',
+        });
+      },
     });
   };
 
-  // MANUAL START: User presses [Start Speaking]
+  // STEP 2: MANUAL START - User presses [Start Speaking]
   const handleStartSpeaking = () => {
+    if (!hasListened) {
+      // Must listen first before speaking!
+      handlePlayModel();
+      return;
+    }
+
     soundEngine.playPop();
     stopAllCleanup();
     setIsRecording(true);
@@ -122,7 +174,7 @@ export const SpeakingStepModal: React.FC<SpeakingStepModalProps> = ({
     }, intervalPerWord);
   };
 
-  // MANUAL STOP: User presses [Stop Speaking]
+  // STEP 2: MANUAL STOP - User presses [Stop Speaking]
   // Praise audio triggered ONLY AFTER pressing [Stop Speaking] AND confirming FULL sentence completion!
   const handleStopSpeaking = () => {
     soundEngine.playPop();
@@ -188,7 +240,7 @@ export const SpeakingStepModal: React.FC<SpeakingStepModalProps> = ({
 
   return (
     <div className="w-full bg-gradient-to-b from-sky-50 to-indigo-50/70 rounded-3xl p-4 sm:p-5 shadow-lg border-3 border-indigo-200 transition-all select-none">
-      {/* Header */}
+      {/* Header: 2-Step Flow Indicator */}
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-full bg-indigo-500 text-white flex items-center justify-center font-bold text-sm shadow-xs">
@@ -196,7 +248,7 @@ export const SpeakingStepModal: React.FC<SpeakingStepModalProps> = ({
           </div>
           <div>
             <span className="text-[10px] font-black uppercase tracking-wider text-indigo-700 block">
-              Step 2 • Manual Speaking
+              Step 2 • Listen & Speak
             </span>
             <span className="text-xs font-bold text-slate-600">
               {instruction}
@@ -204,39 +256,61 @@ export const SpeakingStepModal: React.FC<SpeakingStepModalProps> = ({
           </div>
         </div>
 
-        {hasCompletedFullSentence && (
+        {hasCompletedFullSentence ? (
           <div className="px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-black flex items-center gap-1">
             <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
             <span>Completed! ⭐</span>
+          </div>
+        ) : !hasListened ? (
+          <div className="px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-900 text-[11px] font-black flex items-center gap-1 border border-amber-300 animate-pulse">
+            <Volume2 className="w-3 h-3 text-amber-600" />
+            <span>1단계: 먼저 듣기</span>
+          </div>
+        ) : (
+          <div className="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-900 text-[11px] font-black flex items-center gap-1 border border-emerald-300">
+            <Mic className="w-3 h-3 text-emerald-600" />
+            <span>2단계: 말하기 준비</span>
           </div>
         )}
       </div>
 
       {/* Target Sentence Card */}
       <div className="bg-white rounded-2xl p-3 sm:p-4 border-2 border-indigo-100 shadow-sm text-center mb-3">
-        <span className="text-[10px] font-extrabold uppercase tracking-widest text-indigo-400 block mb-1.5">
-          Sentence to speak
-        </span>
+        <div className="flex items-center justify-between mb-1.5 px-1">
+          <span className="text-[10px] font-extrabold uppercase tracking-widest text-indigo-400">
+            {!hasListened ? '🎧 1단계: 먼저 귀 기울여 들어보세요' : '🎙️ 2단계: 따라 말할 문장'}
+          </span>
+          {isPlayingModel && (
+            <span className="text-[10px] font-black text-indigo-600 animate-pulse flex items-center gap-1">
+              <span className="w-2 h-2 rounded-full bg-indigo-500 animate-ping" />
+              듣는 중...
+            </span>
+          )}
+        </div>
 
-        {/* Word chips */}
+        {/* Word chips with visual karaoke tracking */}
         <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2">
           {cleanWords.map((word, idx) => {
             const isSpoken = idx <= spokenWordIdx;
-            const isCurrent = isRecording && idx === spokenWordIdx;
+            const isSpeakingCurrent = isRecording && idx === spokenWordIdx;
+            const isModelCurrent = isPlayingModel && idx === modelWordIdx;
 
             return (
               <span
                 key={idx}
-                className={`px-2 py-1 rounded-xl text-lg sm:text-xl font-heading font-black transition-all ${
+                className={`px-2.5 py-1 rounded-xl text-lg sm:text-xl font-heading font-black transition-all ${
                   hasCompletedFullSentence || isSpoken
                     ? 'bg-emerald-100 text-emerald-900 border border-emerald-300 scale-105'
-                    : isCurrent
+                    : isSpeakingCurrent
                     ? 'bg-amber-300 text-amber-950 ring-2 ring-amber-400 scale-110 animate-pulse'
+                    : isModelCurrent
+                    ? 'bg-indigo-300 text-indigo-950 ring-2 ring-indigo-400 scale-110 animate-pulse'
                     : 'bg-slate-100 text-slate-600 border border-slate-200'
                 }`}
               >
                 {word}
                 {isSpoken && <span className="ml-1 text-xs text-emerald-600">✓</span>}
+                {isModelCurrent && <span className="ml-1 text-xs text-indigo-700">🔊</span>}
               </span>
             );
           })}
@@ -261,40 +335,71 @@ export const SpeakingStepModal: React.FC<SpeakingStepModalProps> = ({
         </div>
       )}
 
-      {/* Manual Recording Controls: Start / Stop */}
+      {/* Sequential 2-Step Controls: Listen first, then Speak! */}
       <div className="flex flex-col sm:flex-row gap-2.5 items-center justify-center">
-        {/* Model Audio Button */}
-        <button
-          onClick={handlePlayModel}
-          disabled={isPlayingModel || isRecording}
-          className="w-full sm:w-auto flex-1 py-3 px-4 rounded-2xl bg-white hover:bg-indigo-50 active:scale-95 text-indigo-800 font-extrabold text-sm border-2 border-indigo-200 flex items-center justify-center gap-2 cursor-pointer transition-all shadow-xs"
-        >
-          <Volume2 className={`w-4 h-4 text-indigo-600 ${isPlayingModel ? 'animate-bounce' : ''}`} />
-          <span>{isPlayingModel ? 'Listening...' : 'Hear Model 🔊'}</span>
-        </button>
-
-        {/* Manual Start / Stop Toggle Button */}
-        {!isRecording ? (
+        {!hasListened ? (
+          /* STEP 1: MUST LISTEN FIRST */
           <button
-            onClick={handleStartSpeaking}
-            className="w-full sm:w-auto flex-1 py-3 px-5 rounded-2xl font-black text-sm sm:text-base flex items-center justify-center gap-2 cursor-pointer transition-all shadow-md active:scale-95 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white shadow-indigo-500/30"
+            onClick={handlePlayModel}
+            disabled={isPlayingModel}
+            className={`w-full py-3.5 px-5 rounded-2xl font-black text-sm sm:text-base flex items-center justify-center gap-2 cursor-pointer transition-all shadow-md active:scale-95 ${
+              isPlayingModel
+                ? 'bg-indigo-600 text-white ring-4 ring-indigo-200 animate-pulse'
+                : 'bg-gradient-to-r from-amber-500 to-indigo-600 hover:from-amber-600 hover:to-indigo-700 text-white shadow-indigo-500/25'
+            }`}
           >
-            <Mic className="w-5 h-5" />
-            <span>{hasCompletedFullSentence ? 'Start Speaking Again 🎙️' : 'Start Speaking 🎙️'}</span>
+            <Volume2 className={`w-5 h-5 ${isPlayingModel ? 'animate-bounce' : ''}`} />
+            <span>
+              {isPlayingModel
+                ? '🎧 원어민 발음 듣는 중... (Listening)'
+                : '🎧 1단계: 먼저 문장 듣기 (Listen First)'}
+            </span>
           </button>
         ) : (
-          <button
-            onClick={handleStopSpeaking}
-            className="w-full sm:w-auto flex-1 py-3 px-5 rounded-2xl font-black text-sm sm:text-base flex items-center justify-center gap-2 cursor-pointer transition-all shadow-lg active:scale-95 bg-rose-600 hover:bg-rose-700 text-white ring-4 ring-rose-200 animate-pulse"
-          >
-            <Square className="w-5 h-5 fill-white" />
-            <span>Stop Speaking ⏹️</span>
-          </button>
+          /* STEP 2: LISTENED! READY TO SPEAK */
+          <>
+            {/* Re-listen button (always available once unlocked) */}
+            <button
+              onClick={handlePlayModel}
+              disabled={isPlayingModel || isRecording}
+              className="w-full sm:w-auto py-3 px-4 rounded-2xl bg-white hover:bg-indigo-50 active:scale-95 text-indigo-800 font-extrabold text-sm border-2 border-indigo-200 flex items-center justify-center gap-2 cursor-pointer transition-all shadow-xs"
+              title="다시 듣기"
+            >
+              <Volume2 className={`w-4 h-4 text-indigo-600 ${isPlayingModel ? 'animate-bounce' : ''}`} />
+              <span>{isPlayingModel ? '듣는 중...' : '다시 듣기 🔊'}</span>
+            </button>
+
+            {/* Manual Start / Stop Speaking Button */}
+            {!isRecording ? (
+              <button
+                onClick={handleStartSpeaking}
+                disabled={isPlayingModel}
+                className="w-full sm:w-auto flex-1 py-3 px-5 rounded-2xl font-black text-sm sm:text-base flex items-center justify-center gap-2 cursor-pointer transition-all shadow-md active:scale-95 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white shadow-indigo-500/30"
+              >
+                <Mic className="w-5 h-5" />
+                <span>
+                  {hasCompletedFullSentence
+                    ? '다시 따라 말하기 🎙️'
+                    : '2단계: 따라 말하기 시작 🎙️'}
+                </span>
+              </button>
+            ) : (
+              <button
+                onClick={handleStopSpeaking}
+                className="w-full sm:w-auto flex-1 py-3 px-5 rounded-2xl font-black text-sm sm:text-base flex items-center justify-center gap-2 cursor-pointer transition-all shadow-lg active:scale-95 bg-rose-600 hover:bg-rose-700 text-white ring-4 ring-rose-200 animate-pulse"
+              >
+                <Square className="w-5 h-5 fill-white" />
+                <span>말하기 완료 ⏹️ (Stop Speaking)</span>
+              </button>
+            )}
+          </>
         )}
       </div>
 
       <p className="mt-2 text-center text-[11px] font-semibold text-slate-500">
-        💡 Press [Start Speaking], speak the full sentence, then press [Stop Speaking]!
+        {!hasListened
+          ? '🎧 스피킹하기 전에 원어민 문장을 먼저 끝까지 들어보세요!'
+          : '💡 [따라 말하기 시작]을 누르고 문장을 끝까지 말한 뒤 [말하기 완료]를 누르세요!'}
       </p>
     </div>
   );

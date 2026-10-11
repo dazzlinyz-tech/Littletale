@@ -14,7 +14,7 @@ import { SpeakingStepModal } from './components/SpeakingStepModal';
 import { ResultScreen } from './components/ResultScreen';
 import { CoverScreen } from './components/CoverScreen';
 import { AnimalSoundGameModal } from './components/AnimalSoundGameModal';
-import { Volume2, ChevronRight, ChevronLeft, Sparkles, BookOpen } from 'lucide-react';
+import { Volume2, ChevronRight, ChevronLeft, Sparkles, BookOpen, CheckCircle2, Lock } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
 type ScreenState = 'cover' | 'story' | 'result';
@@ -63,6 +63,15 @@ export default function App() {
 
   // Synchronized Read-Aloud with Word Highlighting
   const handleReadAloud = () => {
+    if (!isQuestionDone) {
+      soundEngine.playHintSound();
+      setBunnyHintMessage('🔍 먼저 아래 퀴즈에서 알맞은 문장을 맞춰보세요!');
+      setTimeout(() => {
+        setBunnyHintMessage(null);
+      }, 2500);
+      return;
+    }
+
     soundEngine.playPop();
     stopSpeaking();
     clearReadTimers();
@@ -261,37 +270,61 @@ export default function App() {
             )}
           </div>
 
-          {/* Story Text Card (Strictly BELOW the Main Illustration across ALL screens including Deep Forest!) */}
-          <div className="w-full bg-white rounded-3xl p-3.5 sm:p-4 shadow-sm border-3 border-amber-200 mb-2.5 text-center">
-            <div className="flex items-center justify-center flex-wrap gap-x-2 gap-y-1 mb-1">
-              {wordsInSentence.map((word, idx) => {
-                const cleanWord = word.replace(/[.,?!]/g, '');
-                const isKeyWord = currentPage.keyWords.includes(cleanWord);
-                const isCurrentReadingWord = activeWordIndex === idx;
-
-                return (
-                  <span
-                    key={idx}
-                    onClick={() => handleWordClick(word)}
-                    className={`text-2xl sm:text-3xl font-extrabold tracking-wide font-heading transition-all inline-block rounded-xl px-1.5 py-0.5 select-none ${
-                      isCurrentReadingWord
-                        ? 'bg-amber-300 text-amber-950 scale-110 shadow-md ring-2 ring-amber-400'
-                        : isKeyWord
-                        ? 'text-amber-900 underline decoration-amber-400 decoration-3 underline-offset-4 cursor-pointer hover:bg-amber-100/70 hover:scale-105 active:scale-95'
-                        : 'text-slate-800'
-                    }`}
-                  >
-                    {word}
-                  </span>
-                );
-              })}
+          {/* Story Text Card: Mystery placeholder before answering, revealed only AFTER quiz is correct! */}
+          {!isQuestionDone ? (
+            <div className="w-full bg-gradient-to-r from-amber-50 to-orange-50/80 rounded-3xl p-3.5 sm:p-4 shadow-xs border-2 border-dashed border-amber-300 mb-2.5 text-center select-none transition-all">
+              <div className="flex items-center justify-center gap-2 mb-1">
+                <span className="text-xl">🔍</span>
+                <span className="text-lg sm:text-xl font-heading font-black text-amber-900 tracking-widest">
+                  ? ? ? ? ?
+                </span>
+                <span className="text-[11px] font-black px-2.5 py-0.5 rounded-full bg-amber-200 text-amber-900 border border-amber-300">
+                  비밀 이야기 문장
+                </span>
+              </div>
+              <p className="text-xs sm:text-sm font-extrabold text-amber-800 flex items-center justify-center gap-1.5">
+                <Sparkles className="w-4 h-4 text-amber-500 animate-spin" />
+                <span>그림을 보고 아래 2개 문장 중 알맞은 것을 골라보세요! ✨</span>
+              </p>
             </div>
+          ) : (
+            <div className="w-full bg-white rounded-3xl p-3.5 sm:p-4 shadow-sm border-3 border-emerald-300 mb-2.5 text-center animate-fadeIn select-none">
+              <div className="flex items-center justify-center gap-1.5 mb-1.5">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                <span className="text-xs font-black text-emerald-700 tracking-wide uppercase">
+                  정답! 이야기 문장이 열렸어요 ✨
+                </span>
+              </div>
+              <div className="flex items-center justify-center flex-wrap gap-x-2 gap-y-1 mb-1">
+                {wordsInSentence.map((word, idx) => {
+                  const cleanWord = word.replace(/[.,?!]/g, '');
+                  const isKeyWord = currentPage.keyWords.includes(cleanWord);
+                  const isCurrentReadingWord = activeWordIndex === idx;
 
-            <p className="text-[11px] font-bold text-amber-700/80 flex items-center justify-center gap-1">
-              <Sparkles className="w-3 h-3 text-amber-500" />
-              <span>Tap underlined words for phonics & visual dictionary!</span>
-            </p>
-          </div>
+                  return (
+                    <span
+                      key={idx}
+                      onClick={() => handleWordClick(word)}
+                      className={`text-2xl sm:text-3xl font-extrabold tracking-wide font-heading transition-all inline-block rounded-xl px-1.5 py-0.5 select-none ${
+                        isCurrentReadingWord
+                          ? 'bg-amber-300 text-amber-950 scale-110 shadow-md ring-2 ring-amber-400'
+                          : isKeyWord
+                          ? 'text-amber-900 underline decoration-amber-400 decoration-3 underline-offset-4 cursor-pointer hover:bg-amber-100/70 hover:scale-105 active:scale-95'
+                          : 'text-slate-800'
+                      }`}
+                    >
+                      {word}
+                    </span>
+                  );
+                })}
+              </div>
+
+              <p className="text-[11px] font-bold text-amber-700/80 flex items-center justify-center gap-1">
+                <Sparkles className="w-3 h-3 text-amber-500" />
+                <span>단어를 누르면 발음과 그림 단어장을 볼 수 있어요!</span>
+              </p>
+            </div>
+          )}
 
           {/* Step 1: Sentence Selection Quiz OR Step 2: Manual Speaking Checkpoint */}
           {!isQuestionDone ? (
@@ -321,10 +354,19 @@ export default function App() {
             <div className="flex items-center gap-1.5 sm:gap-2">
               <button
                 onClick={handleReadAloud}
-                className="px-3.5 sm:px-4 py-2.5 rounded-2xl bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-white font-extrabold text-sm sm:text-base flex items-center gap-1.5 shadow-md shadow-amber-400/30 cursor-pointer active:scale-95 transition-all"
+                className={`px-3.5 sm:px-4 py-2.5 rounded-2xl font-extrabold text-sm sm:text-base flex items-center gap-1.5 shadow-md cursor-pointer active:scale-95 transition-all ${
+                  !isQuestionDone
+                    ? 'bg-slate-100 hover:bg-slate-200 text-slate-500 border border-slate-300 shadow-none'
+                    : 'bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-white shadow-amber-400/30'
+                }`}
+                title={!isQuestionDone ? '문장을 맞추면 읽기 기능이 열립니다' : '전체 문장 읽기'}
               >
-                <Volume2 className={`w-5 h-5 ${isReading ? 'animate-bounce' : ''}`} />
-                <span>{isReading ? 'Reading...' : 'Read'}</span>
+                {!isQuestionDone ? (
+                  <Lock className="w-4 h-4 text-slate-400" />
+                ) : (
+                  <Volume2 className={`w-5 h-5 ${isReading ? 'animate-bounce' : ''}`} />
+                )}
+                <span>{!isQuestionDone ? 'Read (Quiz first)' : isReading ? 'Reading...' : 'Read'}</span>
               </button>
 
               <button
