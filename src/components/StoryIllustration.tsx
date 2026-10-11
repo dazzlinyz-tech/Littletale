@@ -648,49 +648,237 @@ export const StoryIllustration: React.FC<StoryIllustrationProps> = ({
         {/* ============================================================== */}
         {pageNumber === 6 && (
           <g id="scene-6-under-porch">
+            {/* Warm Sky with Soft Clouds & Distant Pine Trees */}
             <rect width="500" height="340" fill="url(#cabinSky)" />
-            <path d="M0 240 L 500 240 L 500 340 L 0 340 Z" fill="#FED7AA" />
+            
+            {/* Distant Rolling Forest Horizon */}
+            <path d="M 0 160 Q 140 145 280 155 T 500 145 L 500 240 L 0 240 Z" fill="#86EFAC" opacity="0.8" />
+            <path d="M 10 160 L 25 130 L 40 160 Z" fill="#15803D" opacity="0.6" />
+            <path d="M 30 160 L 45 125 L 60 160 Z" fill="#166534" opacity="0.7" />
+            <path d="M 70 160 L 85 135 L 100 160 Z" fill="#15803D" opacity="0.5" />
+            <path d="M 410 155 L 425 125 L 440 155 Z" fill="#166534" opacity="0.6" />
+            <path d="M 435 155 L 450 120 L 465 155 Z" fill="#15803D" opacity="0.7" />
 
-            {/* Front Wooden Cabin Porch & Steps */}
-            <g transform="translate(180, 110)" filter="url(#softShadow)">
-              {/* Cabin Door */}
-              <rect x="60" y="30" width="60" height="100" fill="#92400E" stroke="#451A03" strokeWidth="3" />
-              <circle cx="110" cy="80" r="4" fill="#FACC15" stroke="#CA8A04" strokeWidth="1" />
-              {/* Porch roof beam */}
-              <rect x="-10" y="20" width="160" height="15" fill="#78350F" stroke="#451A03" strokeWidth="2" />
-              {/* Wooden Steps */}
-              <rect x="10" y="130" width="140" height="18" fill="#B45309" stroke="#78350F" strokeWidth="2.5" />
-              <rect x="0" y="148" width="160" height="20" fill="#92400E" stroke="#78350F" strokeWidth="2.5" />
-              <rect x="-10" y="168" width="180" height="22" fill="#78350F" stroke="#451A03" strokeWidth="2.5" />
+            {/* Lush Front Yard Ground */}
+            <path d="M 0 215 Q 250 205 500 215 L 500 340 L 0 340 Z" fill="#4ADE80" />
+            <path d="M 0 245 Q 250 235 500 245 L 500 340 L 0 340 Z" fill="#22C55E" />
+            {/* Gravel / stone garden path leading to steps */}
+            <path d="M 140 340 Q 190 280 200 260 L 290 260 Q 300 280 350 340 Z" fill="#E2E8F0" stroke="#CBD5E1" strokeWidth="2" />
+            <ellipse cx="230" cy="300" rx="14" ry="7" fill="#CBD5E1" />
+            <ellipse cx="265" cy="315" rx="18" ry="8" fill="#CBD5E1" />
+            <ellipse cx="240" cy="275" rx="12" ry="5" fill="#CBD5E1" />
+
+            {/* ================= CABIN HOUSE STRUCTURE ================= */}
+            <g filter="url(#softShadow)">
+              {/* Stone Chimney on the right roof with gentle smoke */}
+              <rect x="370" y="30" width="28" height="65" fill="#78716C" stroke="#44403C" strokeWidth="2.5" rx="2" />
+              <circle cx="384" cy="18" r="9" fill="#F1F5F9" opacity="0.75" />
+              <circle cx="392" cy="0" r="13" fill="#F1F5F9" opacity="0.55" />
+              <circle cx="402" cy="-20" r="17" fill="#F1F5F9" opacity="0.35" />
+
+              {/* Main Cabin Wall (Warm Log Cladding) */}
+              <rect x="90" y="80" width="320" height="135" fill="#B45309" stroke="#78350F" strokeWidth="3" rx="4" />
+              {/* Log horizontal lines */}
+              <line x1="90" y1="105" x2="410" y2="105" stroke="#92400E" strokeWidth="2" />
+              <line x1="90" y1="130" x2="410" y2="130" stroke="#92400E" strokeWidth="2" />
+              <line x1="90" y1="155" x2="410" y2="155" stroke="#92400E" strokeWidth="2" />
+              <line x1="90" y1="180" x2="410" y2="180" stroke="#92400E" strokeWidth="2" />
+
+              {/* Triangular Roof Gable */}
+              <polygon points="70,85 250,15 430,85" fill="#991B1B" stroke="#7F1D1D" strokeWidth="3.5" />
+              <polygon points="85,82 250,22 415,82" fill="#B91C1C" />
+
+              {/* Attic Circular Window */}
+              <circle cx="250" cy="55" r="14" fill="#FEF08A" stroke="#7F1D1D" strokeWidth="2.5" />
+              <line x1="250" y1="41" x2="250" y2="69" stroke="#7F1D1D" strokeWidth="2" />
+              <line x1="236" y1="55" x2="264" y2="55" stroke="#7F1D1D" strokeWidth="2" />
+
+              {/* Cabin Windows with Warm Light */}
+              {/* Left Window */}
+              <rect x="115" y="115" width="45" height="45" fill="#FEF08A" stroke="#451A03" strokeWidth="2.5" rx="3" />
+              <rect x="115" y="115" width="45" height="45" fill="none" stroke="#FFFFFF" strokeWidth="1.5" opacity="0.5" />
+              <line x1="137.5" y1="115" x2="137.5" y2="160" stroke="#451A03" strokeWidth="2" />
+              <line x1="115" y1="137.5" x2="160" y2="137.5" stroke="#451A03" strokeWidth="2" />
+              {/* Window flower box */}
+              <rect x="110" y="160" width="55" height="12" fill="#78350F" stroke="#451A03" strokeWidth="2" rx="2" />
+              <circle cx="120" cy="158" r="4.5" fill="#FB7185" />
+              <circle cx="132" cy="156" r="4.5" fill="#FACC15" />
+              <circle cx="144" cy="157" r="4.5" fill="#38BDF8" />
+              <circle cx="155" cy="158" r="4.5" fill="#FB7185" />
+
+              {/* Right Window */}
+              <rect x="340" y="115" width="45" height="45" fill="#FEF08A" stroke="#451A03" strokeWidth="2.5" rx="3" />
+              <line x1="362.5" y1="115" x2="362.5" y2="160" stroke="#451A03" strokeWidth="2" />
+              <line x1="340" y1="137.5" x2="385" y2="137.5" stroke="#451A03" strokeWidth="2" />
+              {/* Window flower box */}
+              <rect x="335" y="160" width="55" height="12" fill="#78350F" stroke="#451A03" strokeWidth="2" rx="2" />
+              <circle cx="345" cy="158" r="4.5" fill="#FACC15" />
+              <circle cx="357" cy="156" r="4.5" fill="#FB7185" />
+              <circle cx="370" cy="157" r="4.5" fill="#A855F7" />
+              <circle cx="380" cy="158" r="4.5" fill="#FACC15" />
+
+              {/* Cabin Front Door (Centered on Porch) */}
+              <rect x="220" y="105" width="60" height="95" fill="#78350F" stroke="#451A03" strokeWidth="3" rx="3" />
+              {/* Door panels */}
+              <rect x="228" y="115" width="44" height="35" fill="#92400E" stroke="#451A03" strokeWidth="1.5" rx="2" />
+              <rect x="228" y="157" width="44" height="38" fill="#92400E" stroke="#451A03" strokeWidth="1.5" rx="2" />
+              {/* Brass door knob */}
+              <circle cx="235" cy="154" r="3.5" fill="#FACC15" stroke="#CA8A04" strokeWidth="1" />
             </g>
 
-            {/* Shaded space UNDER the porch */}
-            <rect x="170" y="240" width="180" height="60" fill="#451A03" opacity="0.7" rx="6" />
+            {/* ================= ELEVATED FRONT PORCH DECK & ROOF ================= */}
+            <g filter="url(#softShadow)">
+              {/* Overhanging Porch Awning Roof */}
+              <polygon points="170,95 250,75 330,95" fill="#7F1D1D" stroke="#451A03" strokeWidth="2.5" />
+              <rect x="175" y="93" width="150" height="8" fill="#991B1B" stroke="#451A03" strokeWidth="1.5" rx="2" />
 
-            {/* BUNNY (Sheltered UNDER the porch steps!) with black outline */}
+              {/* Porch Support Pillars (Holding up the porch roof down to deck) */}
+              <rect x="180" y="98" width="10" height="102" fill="#FDE68A" stroke="#78350F" strokeWidth="2" />
+              <rect x="310" y="98" width="10" height="102" fill="#FDE68A" stroke="#78350F" strokeWidth="2" />
+
+              {/* Porch Railings */}
+              <rect x="140" y="160" width="45" height="6" fill="#FDE68A" stroke="#78350F" strokeWidth="1.5" />
+              <rect x="140" y="188" width="45" height="6" fill="#FDE68A" stroke="#78350F" strokeWidth="1.5" />
+              {[148, 158, 168, 178].map((rx) => (
+                <rect key={`rail-l-${rx}`} x={rx} y="163" width="4" height="28" fill="#FEF3C7" stroke="#78350F" strokeWidth="1" />
+              ))}
+
+              <rect x="315" y="160" width="45" height="6" fill="#FDE68A" stroke="#78350F" strokeWidth="1.5" />
+              <rect x="315" y="188" width="45" height="6" fill="#FDE68A" stroke="#78350F" strokeWidth="1.5" />
+              {[322, 332, 342, 352].map((rx) => (
+                <rect key={`rail-r-${rx}`} x={rx} y="163" width="4" height="28" fill="#FEF3C7" stroke="#78350F" strokeWidth="1" />
+              ))}
+
+              {/* Elevated Wooden Deck Floor Plank */}
+              <rect x="135" y="195" width="230" height="16" fill="#D97706" stroke="#78350F" strokeWidth="2.5" rx="2" />
+              {/* Planks lines */}
+              <line x1="135" y1="202" x2="365" y2="202" stroke="#B45309" strokeWidth="1.5" />
+            </g>
+
+            {/* ================= OPEN SPACE UNDER THE PORCH ================= */}
+            {/* The crawl space under the elevated porch deck */}
+            <g id="under-porch-crawlspace">
+              {/* Foundation Posts on Left & Right */}
+              <rect x="140" y="211" width="14" height="45" fill="#78350F" stroke="#451A03" strokeWidth="2.5" />
+              <rect x="346" y="211" width="14" height="45" fill="#78350F" stroke="#451A03" strokeWidth="2.5" />
+              <rect x="195" y="211" width="10" height="45" fill="#78350F" stroke="#451A03" strokeWidth="2" opacity="0.9" />
+              <rect x="295" y="211" width="10" height="45" fill="#78350F" stroke="#451A03" strokeWidth="2" opacity="0.9" />
+
+              {/* Shaded crawlspace cavity under porch steps */}
+              <rect x="154" y="211" width="192" height="44" fill="#291205" rx="4" />
+              <rect x="158" y="215" width="184" height="38" fill="#1C0D02" opacity="0.85" rx="3" />
+
+              {/* Wooden lattice / ventilation grill on sides of porch base */}
+              <g opacity="0.5" stroke="#78350F" strokeWidth="1.5">
+                <line x1="156" y1="215" x2="190" y2="249" />
+                <line x1="168" y1="215" x2="194" y2="241" />
+                <line x1="190" y1="215" x2="156" y2="249" />
+                <line x1="306" y1="215" x2="344" y2="249" />
+                <line x1="344" y1="215" x2="306" y2="249" />
+              </g>
+
+              {/* Wooden Porch Steps leading up to the center deck */}
+              <g filter="url(#softShadow)">
+                {/* Step 1 (Top step right under door) */}
+                <rect x="206" y="209" width="88" height="12" fill="#B45309" stroke="#78350F" strokeWidth="2" rx="2" />
+                {/* Step 2 (Middle step) */}
+                <rect x="198" y="221" width="104" height="13" fill="#D97706" stroke="#78350F" strokeWidth="2" rx="2" />
+                {/* Step 3 (Bottom step resting on ground) */}
+                <rect x="190" y="234" width="120" height="15" fill="#B45309" stroke="#451A03" strokeWidth="2.5" rx="2" />
+                {/* Step plank details */}
+                <line x1="194" y1="240" x2="306" y2="240" stroke="#78350F" strokeWidth="1.5" />
+              </g>
+
+              {/* Potted plant by the left porch stairs */}
+              <ellipse cx="120" cy="265" rx="12" ry="7" fill="#475569" stroke="#1E293B" strokeWidth="1.5" />
+              <path d="M 110 263 L 113 245 L 127 245 L 130 263 Z" fill="#C2410C" stroke="#7C2D12" strokeWidth="2" />
+              <circle cx="120" cy="238" r="11" fill="#16A34A" stroke="#14532D" strokeWidth="1.5" />
+              <circle cx="114" cy="235" r="7" fill="#22C55E" />
+              <circle cx="126" cy="236" r="6" fill="#4ADE80" />
+
+              {/* Cute little frog sitting near the bottom steps with cartoon outline */}
+              <g
+                transform="translate(365, 260)"
+                className="cursor-pointer hover:scale-110 transition-transform"
+                filter="url(#characterShadow)"
+                onClick={(e) => handleAnimalClick(e, 'frog', '🐸 Ribbit-ribbit!')}
+              >
+                {/* Frog Body */}
+                <ellipse cx="0" cy="4" rx="16" ry="12" fill="#22C55E" stroke="#0F172A" strokeWidth="2.2" />
+                <ellipse cx="0" cy="6" rx="9" ry="7" fill="#86EFAC" />
+                {/* Frog Feet */}
+                <ellipse cx="-12" cy="14" rx="7" ry="3.5" fill="#16A34A" stroke="#0F172A" strokeWidth="1.5" />
+                <ellipse cx="12" cy="14" rx="7" ry="3.5" fill="#16A34A" stroke="#0F172A" strokeWidth="1.5" />
+                {/* Frog Big Eyes */}
+                <circle cx="-6" cy="-5" r="6" fill="#22C55E" stroke="#0F172A" strokeWidth="2" />
+                <circle cx="-6" cy="-5" r="3.2" fill="#0F172A" />
+                <circle cx="-5" cy="-6.5" r="1.1" fill="#FFFFFF" />
+                <circle cx="6" cy="-5" r="6" fill="#22C55E" stroke="#0F172A" strokeWidth="2" />
+                <circle cx="6" cy="-5" r="3.2" fill="#0F172A" />
+                <circle cx="7" cy="-6.5" r="1.1" fill="#FFFFFF" />
+                {/* Cute smile */}
+                <path d="M -5 5 Q 0 9 5 5" stroke="#0F172A" strokeWidth="1.8" fill="none" strokeLinecap="round" />
+              </g>
+            </g>
+
+            {/* ================= BUNNY PEEKING OUT FROM UNDER THE PORCH ================= */}
+            {/* Placed clearly in the shaded under-porch opening between steps and left foundation */}
             <g
-              transform="translate(250, 255)"
-              className={`cursor-pointer transition-transform duration-300 ${bunnyBounced ? '-translate-y-4' : 'hover:-translate-y-1.5'} ${highlightBunny ? 'filter drop-shadow-[0_0_14px_rgba(251,191,36,0.95)]' : ''}`}
+              transform="translate(250, 246)"
+              className={`cursor-pointer transition-transform duration-300 ${bunnyBounced ? '-translate-y-4 scale-110' : 'hover:-translate-y-1.5'} ${highlightBunny ? 'filter drop-shadow-[0_0_16px_rgba(251,191,36,0.95)]' : ''}`}
               onClick={handleBunnyClick}
               filter="url(#characterShadow)"
             >
-              {isQuestionMode && <circle cx="0" cy="5" r="46" fill="#FDE047" opacity="0.4" className="animate-pulse" />}
+              {isQuestionMode && <circle cx="0" cy="0" r="48" fill="#FDE047" opacity="0.45" className="animate-pulse" />}
 
-              <ellipse cx="0" cy="14" rx="21" ry="19" fill="#FFFBEB" stroke="#0F172A" strokeWidth="2.6" />
-              {/* Tilted ears under steps */}
-              <ellipse cx="-10" cy="-22" rx="7.5" ry="19" fill="#FFFBEB" stroke="#0F172A" strokeWidth="2.2" transform="rotate(-20 -10 -22)" />
-              <ellipse cx="-10" cy="-22" rx="4" ry="13" fill="#F472B6" transform="rotate(-20 -10 -22)" />
-              <ellipse cx="10" cy="-22" rx="7.5" ry="19" fill="#FFFBEB" stroke="#0F172A" strokeWidth="2.2" transform="rotate(15 10 -22)" />
-              <ellipse cx="10" cy="-22" rx="4" ry="13" fill="#F472B6" transform="rotate(15 10 -22)" />
+              {/* Shaded halo behind bunny */}
+              <ellipse cx="0" cy="20" rx="30" ry="8" fill="#000000" opacity="0.35" />
 
-              <circle cx="0" cy="-4" r="19" fill="#FFFBEB" stroke="#0F172A" strokeWidth="2.6" />
-              <circle cx="-6" cy="-6" r="3.2" fill="#0F172A" />
-              <circle cx="-5" cy="-7.5" r="1.1" fill="#FFFFFF" />
-              <circle cx="6" cy="-6" r="3.2" fill="#0F172A" />
-              <circle cx="7" cy="-7.5" r="1.1" fill="#FFFFFF" />
-              <polygon points="0,-2 -3,-5 3,-5" fill="#F472B6" />
-              <circle cx="-12" cy="-3" r="4.5" fill="#FDA4AF" opacity="0.75" />
-              <circle cx="12" cy="-3" r="4.5" fill="#FDA4AF" opacity="0.75" />
+              {/* Bunny Body crouching under porch steps */}
+              <ellipse cx="0" cy="12" rx="22" ry="18" fill="#FFFBEB" stroke="#0F172A" strokeWidth="2.6" />
+
+              {/* Cute Bunny Ears tilted to fit under the porch beam */}
+              <ellipse cx="-11" cy="-24" rx="7.5" ry="20" fill="#FFFBEB" stroke="#0F172A" strokeWidth="2.2" transform="rotate(-18 -11 -24)" />
+              <ellipse cx="-11" cy="-24" rx="3.8" ry="14" fill="#F472B6" transform="rotate(-18 -11 -24)" />
+              <ellipse cx="11" cy="-24" rx="7.5" ry="20" fill="#FFFBEB" stroke="#0F172A" strokeWidth="2.2" transform="rotate(18 11 -24)" />
+              <ellipse cx="11" cy="-24" rx="3.8" ry="14" fill="#F472B6" transform="rotate(18 11 -24)" />
+
+              {/* Fluffy Head */}
+              <circle cx="0" cy="-6" r="20" fill="#FFFBEB" stroke="#0F172A" strokeWidth="2.6" />
+
+              {/* Sparkling Eyes looking up curiously */}
+              <circle cx="-6.5" cy="-8" r="3.5" fill="#0F172A" />
+              <circle cx="-5.2" cy="-9.5" r="1.3" fill="#FFFFFF" />
+              <circle cx="6.5" cy="-8" r="3.5" fill="#0F172A" />
+              <circle cx="7.8" cy="-9.5" r="1.3" fill="#FFFFFF" />
+
+              {/* Pink Nose & Cute Whiskers */}
+              <polygon points="0,-3 -3,-6 3,-6" fill="#F472B6" />
+              <path d="M -2 0 Q -5 4 -9 2" stroke="#0F172A" strokeWidth="1.2" fill="none" />
+              <path d="M 2 0 Q 5 4 9 2" stroke="#0F172A" strokeWidth="1.2" fill="none" />
+              {/* Whiskers */}
+              <line x1="-7" y1="-5" x2="-18" y2="-7" stroke="#64748B" strokeWidth="1" />
+              <line x1="-7" y1="-3" x2="-17" y2="-2" stroke="#64748B" strokeWidth="1" />
+              <line x1="7" y1="-5" x2="18" y2="-7" stroke="#64748B" strokeWidth="1" />
+              <line x1="7" y1="-3" x2="17" y2="-2" stroke="#64748B" strokeWidth="1" />
+
+              {/* Rosy Cheeks */}
+              <circle cx="-12" cy="-4" r="4.8" fill="#FDA4AF" opacity="0.8" />
+              <circle cx="12" cy="-4" r="4.8" fill="#FDA4AF" opacity="0.8" />
+
+              {/* Peeking little front paws gripping the bottom wooden edge */}
+              <ellipse cx="-10" cy="18" rx="7" ry="5.5" fill="#FFFBEB" stroke="#0F172A" strokeWidth="2" />
+              <ellipse cx="10" cy="18" rx="7" ry="5.5" fill="#FFFBEB" stroke="#0F172A" strokeWidth="2" />
+            </g>
+
+            {/* Daisies in the grass foreground */}
+            <g>
+              <circle cx="50" cy="290" r="5" fill="#FFFFFF" stroke="#0F172A" strokeWidth="1" />
+              <circle cx="50" cy="290" r="2.5" fill="#FACC15" />
+              <circle cx="75" cy="305" r="6" fill="#FFFFFF" stroke="#0F172A" strokeWidth="1" />
+              <circle cx="75" cy="305" r="3" fill="#FACC15" />
+              <circle cx="430" cy="295" r="5.5" fill="#FFFFFF" stroke="#0F172A" strokeWidth="1" />
+              <circle cx="430" cy="295" r="2.5" fill="#FACC15" />
             </g>
           </g>
         )}
