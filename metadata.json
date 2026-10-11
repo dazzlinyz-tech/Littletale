@@ -1,0 +1,6 @@
+{
+  "name": "LittleTale - English Picture-Book Reader",
+  "description": "An interactive English picture-book reading app that guides 1st-2nd grade learners from listening to finding to speaking with 'Where is Bunny?'.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
