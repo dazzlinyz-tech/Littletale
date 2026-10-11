@@ -4,7 +4,7 @@ export const STAGES: StageInfo[] = [
   {
     id: 1,
     name: 'Forest Entrance',
-    koreanName: '숲 입구',
+    koreanName: 'Forest Entrance',
     icon: '🌲',
     themeColor: '#10B981',
     description: 'Sunny meadow arch, blooming wildflowers, and winding trail where the chase begins!',
@@ -12,7 +12,7 @@ export const STAGES: StageInfo[] = [
   {
     id: 2,
     name: 'Deep Forest',
-    koreanName: '깊은 숲',
+    koreanName: 'Deep Forest',
     icon: '🌳',
     themeColor: '#059669',
     description: 'Ancient oak trees, mossy trails, and stepping stones across the bubbling river.',
@@ -20,7 +20,7 @@ export const STAGES: StageInfo[] = [
   {
     id: 3,
     name: 'Cabin',
-    koreanName: '오두막',
+    koreanName: 'Woodland Cabin',
     icon: '🏡',
     themeColor: '#D97706',
     description: 'White picket garden fence and hidden shelter under the wooden cabin porch.',
@@ -28,7 +28,7 @@ export const STAGES: StageInfo[] = [
   {
     id: 4,
     name: 'Room',
-    koreanName: '방 안',
+    koreanName: 'Cozy Room',
     icon: '🛏️',
     themeColor: '#9333EA',
     description: 'Cozy blanket basket and warm quilt bed — the final spot where Bunny is caught and hugged!',

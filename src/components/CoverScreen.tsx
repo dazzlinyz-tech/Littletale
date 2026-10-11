@@ -38,7 +38,7 @@ export const CoverScreen: React.FC<CoverScreenProps> = ({
     soundEngine.playPop();
     const nextIdx = (activeStageIdx + 1) % STAGES.length;
     setActiveStageIdx(nextIdx);
-    setDialogueBanner(`📍 Stage ${nextIdx + 1}: ${STAGES[nextIdx].name} (${STAGES[nextIdx].koreanName})`);
+    setDialogueBanner(`📍 Stage ${nextIdx + 1}: ${STAGES[nextIdx].name}`);
     setTimeout(() => setDialogueBanner(null), 2000);
   };
 
@@ -165,7 +165,7 @@ export const CoverScreen: React.FC<CoverScreenProps> = ({
               <span
                 className="cursor-pointer hover:scale-125 transition-transform inline-flex items-center"
                 onClick={() => handleAnimalClick('bird', '💙 Bluebird: "Tweet! Follow me!"')}
-                title="Bluebird (파랑새)"
+                title="Bluebird"
               >
                 <BluebirdIcon size={26} />
               </span>

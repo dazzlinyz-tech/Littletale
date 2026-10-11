@@ -65,7 +65,7 @@ export default function App() {
   const handleReadAloud = () => {
     if (!isQuestionDone) {
       soundEngine.playHintSound();
-      setBunnyHintMessage('🔍 먼저 아래 퀴즈에서 알맞은 문장을 맞춰보세요!');
+      setBunnyHintMessage('🔍 Solve the sentence quiz below first!');
       setTimeout(() => {
         setBunnyHintMessage(null);
       }, 2500);
@@ -128,15 +128,9 @@ export default function App() {
     }
   };
 
-  // Tapping Bunny in illustration does NOT automatically pass the page!
-  // Gives playful cue and guides learner to select the correct sentence.
+  // Tapping Bunny in illustration plays animal sound and cute peek-a-boo
   const handleBunnyTapped = () => {
-    soundEngine.playAnimalSound('bunny');
-    soundEngine.playPop();
-    setBunnyHintMessage('🐰 Peek-a-boo! Now select the correct sentence below to pass!');
-    setTimeout(() => {
-      setBunnyHintMessage(null);
-    }, 2800);
+    // Sound & single animation handled cleanly in StoryIllustration
   };
 
   // Sentence Selection Question Solved (Only way to complete Step 1)
@@ -213,7 +207,7 @@ export default function App() {
               <span className="text-base">{currentPage.stage.icon}</span>
               <div className="flex flex-col text-left">
                 <span className="text-[10px] font-black uppercase text-amber-600 leading-tight">
-                  Stage {currentPage.stage.id}/4 • {currentPage.stage.koreanName}
+                  Stage {currentPage.stage.id}/4
                 </span>
                 <span className="font-heading font-black text-amber-950 text-xs sm:text-sm leading-none">
                   {currentPage.stage.name}
@@ -275,16 +269,13 @@ export default function App() {
             <div className="w-full bg-gradient-to-r from-amber-50 to-orange-50/80 rounded-3xl p-3.5 sm:p-4 shadow-xs border-2 border-dashed border-amber-300 mb-2.5 text-center select-none transition-all">
               <div className="flex items-center justify-center gap-2 mb-1">
                 <span className="text-xl">🔍</span>
-                <span className="text-lg sm:text-xl font-heading font-black text-amber-900 tracking-widest">
+                <span className="text-2xl sm:text-3xl font-heading font-black text-amber-900 tracking-widest drop-shadow-xs">
                   ? ? ? ? ?
-                </span>
-                <span className="text-[11px] font-black px-2.5 py-0.5 rounded-full bg-amber-200 text-amber-900 border border-amber-300">
-                  비밀 이야기 문장
                 </span>
               </div>
               <p className="text-xs sm:text-sm font-extrabold text-amber-800 flex items-center justify-center gap-1.5">
                 <Sparkles className="w-4 h-4 text-amber-500 animate-spin" />
-                <span>그림을 보고 아래 2개 문장 중 알맞은 것을 골라보세요! ✨</span>
+                <span>Look at the picture and choose the matching sentence below! ✨</span>
               </p>
             </div>
           ) : (
@@ -292,7 +283,7 @@ export default function App() {
               <div className="flex items-center justify-center gap-1.5 mb-1.5">
                 <CheckCircle2 className="w-4 h-4 text-emerald-600" />
                 <span className="text-xs font-black text-emerald-700 tracking-wide uppercase">
-                  정답! 이야기 문장이 열렸어요 ✨
+                  Correct! Story sentence revealed ✨
                 </span>
               </div>
               <div className="flex items-center justify-center flex-wrap gap-x-2 gap-y-1 mb-1">
@@ -321,7 +312,7 @@ export default function App() {
 
               <p className="text-[11px] font-bold text-amber-700/80 flex items-center justify-center gap-1">
                 <Sparkles className="w-3 h-3 text-amber-500" />
-                <span>단어를 누르면 발음과 그림 단어장을 볼 수 있어요!</span>
+                <span>Tap any word to listen and see the picture dictionary!</span>
               </p>
             </div>
           )}
@@ -359,14 +350,14 @@ export default function App() {
                     ? 'bg-slate-100 hover:bg-slate-200 text-slate-500 border border-slate-300 shadow-none'
                     : 'bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-white shadow-amber-400/30'
                 }`}
-                title={!isQuestionDone ? '문장을 맞추면 읽기 기능이 열립니다' : '전체 문장 읽기'}
+                title={!isQuestionDone ? 'Solve the sentence quiz first to unlock Read' : 'Read Full Sentence'}
               >
                 {!isQuestionDone ? (
                   <Lock className="w-4 h-4 text-slate-400" />
                 ) : (
                   <Volume2 className={`w-5 h-5 ${isReading ? 'animate-bounce' : ''}`} />
                 )}
-                <span>{!isQuestionDone ? 'Read (Quiz first)' : isReading ? 'Reading...' : 'Read'}</span>
+                <span>{!isQuestionDone ? 'Read (Locked)' : isReading ? 'Reading...' : 'Read'}</span>
               </button>
 
               <button

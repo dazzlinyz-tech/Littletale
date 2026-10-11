@@ -77,7 +77,7 @@ export const SpeakingStepModal: React.FC<SpeakingStepModalProps> = ({
     setModelWordIdx(0);
     setFeedbackMsg({
       type: 'hint',
-      text: '🎧 1단계: 원어민 발음을 귀 기울여 잘 들어보세요!',
+      text: '🎧 Step 1: Listen carefully to the sentence!',
     });
 
     // Pacing for word highlighting during model playback
@@ -103,7 +103,7 @@ export const SpeakingStepModal: React.FC<SpeakingStepModalProps> = ({
         setHasListened(true);
         setFeedbackMsg({
           type: 'hint',
-          text: '✨ 잘 들었나요? 이제 [2단계: 따라 말하기 🎙️] 버튼을 누르고 문장을 말해보세요!',
+          text: '✨ Great listening! Now tap [Step 2: Start Speaking 🎙️] to practice!',
         });
       },
     });
@@ -264,12 +264,12 @@ export const SpeakingStepModal: React.FC<SpeakingStepModalProps> = ({
         ) : !hasListened ? (
           <div className="px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-900 text-[11px] font-black flex items-center gap-1 border border-amber-300 animate-pulse">
             <Volume2 className="w-3 h-3 text-amber-600" />
-            <span>1단계: 먼저 듣기</span>
+            <span>Step 1: Listen First</span>
           </div>
         ) : (
           <div className="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-900 text-[11px] font-black flex items-center gap-1 border border-emerald-300">
             <Mic className="w-3 h-3 text-emerald-600" />
-            <span>2단계: 말하기 준비</span>
+            <span>Step 2: Ready to Speak</span>
           </div>
         )}
       </div>
@@ -278,12 +278,12 @@ export const SpeakingStepModal: React.FC<SpeakingStepModalProps> = ({
       <div className="bg-white rounded-2xl p-3 sm:p-4 border-2 border-indigo-100 shadow-sm text-center mb-3">
         <div className="flex items-center justify-between mb-1.5 px-1">
           <span className="text-[10px] font-extrabold uppercase tracking-widest text-indigo-400">
-            {!hasListened ? '🎧 1단계: 먼저 귀 기울여 들어보세요' : '🎙️ 2단계: 따라 말할 문장'}
+            {!hasListened ? '🎧 Step 1: Listen carefully first' : '🎙️ Step 2: Sentence to speak'}
           </span>
           {isPlayingModel && (
             <span className="text-[10px] font-black text-indigo-600 animate-pulse flex items-center gap-1">
               <span className="w-2 h-2 rounded-full bg-indigo-500 animate-ping" />
-              듣는 중...
+              Listening...
             </span>
           )}
         </div>
@@ -351,8 +351,8 @@ export const SpeakingStepModal: React.FC<SpeakingStepModalProps> = ({
             <Volume2 className={`w-5 h-5 ${isPlayingModel ? 'animate-bounce' : ''}`} />
             <span>
               {isPlayingModel
-                ? '🎧 원어민 발음 듣는 중... (Listening)'
-                : '🎧 1단계: 먼저 문장 듣기 (Listen First)'}
+                ? '🎧 Listening to audio...'
+                : '🎧 Step 1: Listen First'}
             </span>
           </button>
         ) : (
@@ -363,10 +363,10 @@ export const SpeakingStepModal: React.FC<SpeakingStepModalProps> = ({
               onClick={handlePlayModel}
               disabled={isPlayingModel || isRecording}
               className="w-full sm:w-auto py-3 px-4 rounded-2xl bg-white hover:bg-indigo-50 active:scale-95 text-indigo-800 font-extrabold text-sm border-2 border-indigo-200 flex items-center justify-center gap-2 cursor-pointer transition-all shadow-xs"
-              title="다시 듣기"
+              title="Listen again"
             >
               <Volume2 className={`w-4 h-4 text-indigo-600 ${isPlayingModel ? 'animate-bounce' : ''}`} />
-              <span>{isPlayingModel ? '듣는 중...' : '다시 듣기 🔊'}</span>
+              <span>{isPlayingModel ? 'Listening...' : 'Listen Again 🔊'}</span>
             </button>
 
             {/* Manual Start / Stop Speaking Button */}
@@ -379,8 +379,8 @@ export const SpeakingStepModal: React.FC<SpeakingStepModalProps> = ({
                 <Mic className="w-5 h-5" />
                 <span>
                   {hasCompletedFullSentence
-                    ? '다시 따라 말하기 🎙️'
-                    : '2단계: 따라 말하기 시작 🎙️'}
+                    ? 'Speak Again 🎙️'
+                    : 'Step 2: Start Speaking 🎙️'}
                 </span>
               </button>
             ) : (
@@ -389,7 +389,7 @@ export const SpeakingStepModal: React.FC<SpeakingStepModalProps> = ({
                 className="w-full sm:w-auto flex-1 py-3 px-5 rounded-2xl font-black text-sm sm:text-base flex items-center justify-center gap-2 cursor-pointer transition-all shadow-lg active:scale-95 bg-rose-600 hover:bg-rose-700 text-white ring-4 ring-rose-200 animate-pulse"
               >
                 <Square className="w-5 h-5 fill-white" />
-                <span>말하기 완료 ⏹️ (Stop Speaking)</span>
+                <span>Done Speaking ⏹️ (Stop)</span>
               </button>
             )}
           </>
@@ -398,8 +398,8 @@ export const SpeakingStepModal: React.FC<SpeakingStepModalProps> = ({
 
       <p className="mt-2 text-center text-[11px] font-semibold text-slate-500">
         {!hasListened
-          ? '🎧 스피킹하기 전에 원어민 문장을 먼저 끝까지 들어보세요!'
-          : '💡 [따라 말하기 시작]을 누르고 문장을 끝까지 말한 뒤 [말하기 완료]를 누르세요!'}
+          ? '🎧 Listen to the sentence first before practicing your speaking!'
+          : '💡 Tap [Start Speaking], speak the sentence aloud, then tap [Done Speaking]!'}
       </p>
     </div>
   );
