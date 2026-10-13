@@ -36,6 +36,7 @@ export default function App() {
 
   // Mini-game modal state
   const [isSoundGameOpen, setIsSoundGameOpen] = useState<boolean>(false);
+  const [quizSessionSeed] = useState<number>(() => (Math.random() < 0.5 ? 1 : 0));
 
   const currentPage = STORY_PAGES[currentPageIndex];
   const totalPages = STORY_PAGES.length;
@@ -176,9 +177,7 @@ export default function App() {
     }
   };
 
-  const collectedStamps: StampData[] = STORY_PAGES.filter(
-    (_, idx) => !!questionCompletedMap[idx]
-  ).map((p) => p.stamp);
+  const collectedStamps: StampData[] = STORY_PAGES.map((p) => p.stamp);
 
   return (
     <div className="min-h-screen bg-[#FEF9EF] flex flex-col justify-between font-['Nunito',sans-serif] select-none">
@@ -322,6 +321,8 @@ export default function App() {
             <div className="w-full mb-2.5">
               <StoryQuestionModal
                 question={currentPage.question}
+                pageNumber={currentPage.pageNumber}
+                sessionSeed={quizSessionSeed}
                 onCorrect={handleQuestionSuccess}
                 onRequestHint={() => {}}
                 isCompleted={isQuestionDone}

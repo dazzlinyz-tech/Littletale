@@ -85,10 +85,13 @@ export const ResultScreen: React.FC<ResultScreenProps> = ({
 
   return (
     <div className="w-full max-w-xl mx-auto px-3 sm:px-4 py-5 flex flex-col items-center select-none">
-      {/* Trophy & Heading */}
-      <div className="relative mb-2 flex items-center justify-center">
-        <div className="w-20 h-20 rounded-full bg-gradient-to-tr from-amber-400 to-yellow-300 flex items-center justify-center shadow-lg border-4 border-white animate-bounce">
-          <Award className="w-10 h-10 text-amber-900" />
+      {/* Trophy & Happy Bunny Celebration Badges */}
+      <div className="relative mb-2 flex items-center justify-center gap-3">
+        <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gradient-to-tr from-pink-300 via-rose-200 to-amber-200 flex items-center justify-center shadow-lg border-4 border-white text-3xl sm:text-4xl animate-bounce">
+          🐰
+        </div>
+        <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gradient-to-tr from-amber-400 to-yellow-300 flex items-center justify-center shadow-lg border-4 border-white">
+          <Award className="w-9 h-9 sm:w-10 sm:h-10 text-amber-900" />
         </div>
         <div className="absolute -top-1 -right-2 text-2xl animate-spin">✨</div>
       </div>
@@ -137,7 +140,7 @@ export const ResultScreen: React.FC<ResultScreenProps> = ({
                 {stamp.animal === 'Bluebird' || stamp.icon === '🐦' || stamp.icon === 'bluebird' ? (
                   <BluebirdIcon size={26} />
                 ) : (
-                  stamp.icon
+                  <span className="select-none leading-none filter drop-shadow-xs">{stamp.icon}</span>
                 )}
               </div>
               <span className="text-[10px] font-black text-slate-800 text-center leading-tight truncate w-full">

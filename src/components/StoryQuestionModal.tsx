@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { StoryQuestion, QuestionChoice } from '../types/story';
 import { soundEngine, speakSentence } from '../utils/audio';
 import { Volume2, Sparkles, CheckCircle2, HelpCircle } from 'lucide-react';
@@ -7,6 +7,8 @@ import { ChoiceIcon } from './ChoiceIcon';
 
 interface StoryQuestionModalProps {
   question: StoryQuestion;
+  pageNumber?: number;
+  sessionSeed?: number;
   onCorrect: () => void;
   onRequestHint?: () => void;
   isCompleted?: boolean;
@@ -14,6 +16,8 @@ interface StoryQuestionModalProps {
 
 export const StoryQuestionModal: React.FC<StoryQuestionModalProps> = ({
   question,
+  pageNumber,
+  sessionSeed = 0,
   onCorrect,
   onRequestHint,
   isCompleted = false,
@@ -22,6 +26,20 @@ export const StoryQuestionModal: React.FC<StoryQuestionModalProps> = ({
   const [feedbackState, setFeedbackState] = useState<'idle' | 'correct' | 'wrong'>('idle');
   const [hintVisible, setHintVisible] = useState(false);
   const [shakeCardId, setShakeCardId] = useState<string | null>(null);
+
+  // Dynamically alternate choice positions so the correct answer doesn't stay on top consecutively
+  // It reliably alternates top/bottom across sequential story pages
+  const displayedChoices = useMemo(() => {
+    const correct = question.choices.find((c) => c.isCorrect) || question.choices[0];
+    const wrong = question.choices.find((c) => !c.isCorrect) || question.choices[1];
+
+    const effectivePage = pageNumber ?? 1;
+    // (effectivePage + sessionSeed) % 2 alternates strictly on every page:
+    // Page 1: Top, Page 2: Bottom, Page 3: Top, Page 4: Bottom, etc.
+    const isCorrectOnTop = (effectivePage + sessionSeed) % 2 === 1;
+
+    return isCorrectOnTop ? [correct, wrong] : [wrong, correct];
+  }, [question, pageNumber, sessionSeed]);
 
   useEffect(() => {
     setSelectedChoiceId(null);
@@ -35,7 +53,7 @@ export const StoryQuestionModal: React.FC<StoryQuestionModalProps> = ({
       }, 350);
       return () => clearTimeout(timer);
     }
-  }, [question.promptText, isCompleted]);
+  }, [question.promptText, isCompleted, pageNumber]);
 
   const speakQuestion = () => {
     soundEngine.playPop();
@@ -145,7 +163,7 @@ export const StoryQuestionModal: React.FC<StoryQuestionModalProps> = ({
 
       {/* 2 Sentence Choice Cards (Learner MUST pick the correct sentence to advance!) */}
       <div className="flex flex-col gap-2.5">
-        {question.choices.map((choice) => {
+        {displayedChoices.map((choice) => {
           const isSelected = selectedChoiceId === choice.id;
           const isShaking = shakeCardId === choice.id;
           const isRight = feedbackState === 'correct' && choice.isCorrect;
