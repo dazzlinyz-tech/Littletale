@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { soundEngine } from '../utils/audio';
 import { Sparkles } from 'lucide-react';
+import { STORY_IMAGES } from '../assets/storyImages';
+import { StorybookImage } from './StorybookImage';
 
 interface StoryIllustrationProps {
   pageNumber: number;
@@ -22,7 +24,7 @@ export const STORY_SCENE_IMAGES: Record<number, {
   }[];
 }> = {
   1: {
-    src: '/src/assets/images/story_scene_entrance_1792116639067.jpg',
+    src: STORY_IMAGES[1],
     alt: 'Forest Trail Entrance with little Bunny hiding in the daisies',
     title: 'Stage 1 • Forest Entrance',
     bunnyLocation: { left: '26%', top: '32%', width: '28%', height: '52%' },
@@ -42,7 +44,7 @@ export const STORY_SCENE_IMAGES: Record<number, {
     ],
   },
   2: {
-    src: '/src/assets/images/story_scene_trail_1792116640324.jpg',
+    src: STORY_IMAGES[2],
     alt: 'Bunny running along the forest trail past the waving bear',
     title: 'Stage 1 • Forest Trail',
     bunnyLocation: { left: '56%', top: '26%', width: '36%', height: '62%' },
@@ -62,7 +64,7 @@ export const STORY_SCENE_IMAGES: Record<number, {
     ],
   },
   3: {
-    src: '/src/assets/images/story_scene_oak_1792116640892.jpg',
+    src: STORY_IMAGES[3],
     alt: 'Bunny peeking from behind the ancient mossy oak tree',
     title: 'Stage 2 • Ancient Oak Tree',
     bunnyLocation: { left: '33%', top: '35%', width: '24%', height: '44%' },
@@ -82,7 +84,7 @@ export const STORY_SCENE_IMAGES: Record<number, {
     ],
   },
   4: {
-    src: '/src/assets/images/story_scene_river_1792116641863.jpg',
+    src: STORY_IMAGES[4],
     alt: 'Bunny across the river by the stepping stones with a mallard duck',
     title: 'Stage 2 • Sparkling River',
     bunnyLocation: { left: '61%', top: '14%', width: '24%', height: '50%' },
@@ -102,7 +104,7 @@ export const STORY_SCENE_IMAGES: Record<number, {
     ],
   },
   5: {
-    src: '/src/assets/images/story_scene_cabin_1792116643561.jpg',
+    src: STORY_IMAGES[5],
     alt: 'Bunny running along the country cabin fence beside a playful puppy',
     title: 'Stage 3 • Cabin Yard Fence',
     bunnyLocation: { left: '31%', top: '40%', width: '22%', height: '38%' },
@@ -122,7 +124,7 @@ export const STORY_SCENE_IMAGES: Record<number, {
     ],
   },
   6: {
-    src: '/src/assets/images/story_scene_porch_1792116644424.jpg',
+    src: STORY_IMAGES[6],
     alt: 'Bunny hiding under the wooden cabin porch with a friendly green frog',
     title: 'Stage 3 • Under the Porch',
     bunnyLocation: { left: '25%', top: '58%', width: '24%', height: '36%' },
@@ -142,7 +144,7 @@ export const STORY_SCENE_IMAGES: Record<number, {
     ],
   },
   7: {
-    src: '/src/assets/images/story_scene_basket_1792116644731.jpg',
+    src: STORY_IMAGES[7],
     alt: 'Bunny snug in the cozy woven blanket basket by the warm fireplace',
     title: 'Stage 4 • Cozy Room Basket',
     bunnyLocation: { left: '34%', top: '22%', width: '30%', height: '48%' },
@@ -162,7 +164,7 @@ export const STORY_SCENE_IMAGES: Record<number, {
     ],
   },
   8: {
-    src: '/src/assets/images/story_scene_party_1792116645034.jpg',
+    src: STORY_IMAGES[8],
     alt: 'Caught you! Happy Bunny smiling right in the center with all friends',
     title: 'Stage 4 • Happy Celebration Party!',
     bunnyLocation: { left: '36%', top: '26%', width: '28%', height: '62%' },

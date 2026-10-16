@@ -3,6 +3,8 @@ import { soundEngine } from '../utils/audio';
 import { Sparkles, Play, Music, Compass } from 'lucide-react';
 import { STAGES } from '../data/storyData';
 import { BluebirdIcon } from './BluebirdIcon';
+import { STORY_IMAGES } from '../assets/storyImages';
+import { StorybookImage } from './StorybookImage';
 
 interface CoverScreenProps {
   onStartStory: () => void;
@@ -107,11 +109,11 @@ export const CoverScreen: React.FC<CoverScreenProps> = ({
           }`}
         >
           {/* Authentic Children's Storybook Watercolor Illustration */}
-          <img
-            src="/src/assets/images/storybook_bunny_adventure_1792116362569.jpg"
+          <StorybookImage
+            src={STORY_IMAGES.cover}
             alt="Where is Bunny? Storybook Adventure"
-            referrerPolicy="no-referrer"
-            className="w-full h-full object-cover select-none pointer-events-none"
+            fallbackIcon="🐰"
+            fallbackTitle="Where is Bunny?"
           />
 
           {/* Interactive Tap Pill Overlay */}
