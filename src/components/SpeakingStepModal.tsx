@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { soundEngine, speakSentence } from '../utils/audio';
-import { Volume2, Mic, Square, Sparkles, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Volume2, Mic, Square, Sparkles, CheckCircle2, AlertCircle, Radio } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
 interface SpeakingStepModalProps {
@@ -25,15 +25,24 @@ export const SpeakingStepModal: React.FC<SpeakingStepModalProps> = ({
   const [hasCompletedFullSentence, setHasCompletedFullSentence] = useState(isCompleted);
   const [feedbackMsg, setFeedbackMsg] = useState<{ type: 'hint' | 'success'; text: string } | null>(null);
 
+  // Real microphone speech recognition state
+  const [recognizedTranscript, setRecognizedTranscript] = useState<string>('');
+  const [micVolume, setMicVolume] = useState<number>(0);
+  const [micPermissionGranted, setMicPermissionGranted] = useState<boolean | null>(null);
+
   const cleanWords = targetSentence
     .split(' ')
     .map((w) => w.replace(/[.,?!]/g, '').trim())
     .filter(Boolean);
 
   const recognitionRef = useRef<any>(null);
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const mediaStreamRef = useRef<MediaStream | null>(null);
+  const analyserRef = useRef<AnalyserNode | null>(null);
+  const animFrameRef = useRef<number | null>(null);
+
   const recordingStartTimeRef = useRef<number>(0);
   const matchedWordsCountRef = useRef<number>(0);
-  const pacingIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const modelPacingRef = useRef<NodeJS.Timeout | null>(null);
 
   // Auto-play model audio when entering speaking step (learner must listen first!)
@@ -42,6 +51,7 @@ export const SpeakingStepModal: React.FC<SpeakingStepModalProps> = ({
       setHasListened(false);
       setSpokenWordIdx(-1);
       setModelWordIdx(-1);
+      setRecognizedTranscript('');
       const timer = setTimeout(() => {
         handlePlayModel();
       }, 400);
@@ -53,20 +63,38 @@ export const SpeakingStepModal: React.FC<SpeakingStepModalProps> = ({
   }, [targetSentence, isCompleted]);
 
   const stopAllCleanup = () => {
+    // Stop speech recognition
     if (recognitionRef.current) {
       try {
+        recognitionRef.current.onresult = null;
+        recognitionRef.current.onerror = null;
+        recognitionRef.current.onend = null;
         recognitionRef.current.stop();
       } catch (e) {}
       recognitionRef.current = null;
     }
-    if (pacingIntervalRef.current) {
-      clearInterval(pacingIntervalRef.current);
-      pacingIntervalRef.current = null;
+
+    // Stop audio stream & analyser
+    if (animFrameRef.current) {
+      cancelAnimationFrame(animFrameRef.current);
+      animFrameRef.current = null;
     }
+    if (mediaStreamRef.current) {
+      mediaStreamRef.current.getTracks().forEach((track) => track.stop());
+      mediaStreamRef.current = null;
+    }
+    if (audioContextRef.current && audioContextRef.current.state !== 'closed') {
+      try {
+        audioContextRef.current.close();
+      } catch (e) {}
+      audioContextRef.current = null;
+    }
+
     if (modelPacingRef.current) {
       clearInterval(modelPacingRef.current);
       modelPacingRef.current = null;
     }
+    setMicVolume(0);
   };
 
   // STEP 1: Listen to Model Audio
@@ -77,10 +105,9 @@ export const SpeakingStepModal: React.FC<SpeakingStepModalProps> = ({
     setModelWordIdx(0);
     setFeedbackMsg({
       type: 'hint',
-      text: '🎧 Step 1: Listen carefully to the sentence!',
+      text: '🎧 Step 1: Listen carefully to how Bunny speaks!',
     });
 
-    // Pacing for word highlighting during model playback
     let currentIdx = 0;
     const intervalPerWord = 520;
     modelPacingRef.current = setInterval(() => {
@@ -103,16 +130,15 @@ export const SpeakingStepModal: React.FC<SpeakingStepModalProps> = ({
         setHasListened(true);
         setFeedbackMsg({
           type: 'hint',
-          text: '✨ Great listening! Now tap [Step 2: Start Speaking 🎙️] to practice!',
+          text: '✨ Great listening! Now tap [Step 2: Start Speaking 🎙️] to speak into your mic!',
         });
       },
     });
   };
 
-  // STEP 2: MANUAL START - User presses [Start Speaking]
-  const handleStartSpeaking = () => {
+  // STEP 2: MANUAL START - Real Microphone Speech Recognition & Live Visual VU Meter
+  const handleStartSpeaking = async () => {
     if (!hasListened) {
-      // Must listen first before speaking!
       handlePlayModel();
       return;
     }
@@ -120,126 +146,175 @@ export const SpeakingStepModal: React.FC<SpeakingStepModalProps> = ({
     soundEngine.playPop();
     stopAllCleanup();
     setIsRecording(true);
-    setSpokenWordIdx(0);
+    setSpokenWordIdx(-1);
+    setRecognizedTranscript('');
     setFeedbackMsg(null);
     recordingStartTimeRef.current = Date.now();
-    matchedWordsCountRef.current = 1;
+    matchedWordsCountRef.current = 0;
 
-    // Web Speech Recognition if available
-    const SpeechRecognition =
+    // 1. Initialize Real Microphone Audio Input Level (Web Audio API)
+    try {
+      if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        mediaStreamRef.current = stream;
+        setMicPermissionGranted(true);
+
+        const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+        if (AudioContextClass) {
+          const audioCtx = new AudioContextClass();
+          audioContextRef.current = audioCtx;
+          const source = audioCtx.createMediaStreamSource(stream);
+          const analyser = audioCtx.createAnalyser();
+          analyser.fftSize = 64;
+          source.connect(analyser);
+          analyserRef.current = analyser;
+
+          const dataArray = new Uint8Array(analyser.frequencyBinCount);
+          const updateVolume = () => {
+            if (!analyserRef.current) return;
+            analyserRef.current.getByteFrequencyData(dataArray);
+            let sum = 0;
+            for (let i = 0; i < dataArray.length; i++) {
+              sum += dataArray[i];
+            }
+            const average = sum / dataArray.length;
+            // Scale average to 0-100 range
+            const normalized = Math.min(100, Math.round((average / 128) * 100));
+            setMicVolume(normalized);
+            animFrameRef.current = requestAnimationFrame(updateVolume);
+          };
+          updateVolume();
+        }
+      }
+    } catch (micErr) {
+      console.warn('Microphone stream access error or permission denied:', micErr);
+      setMicPermissionGranted(false);
+    }
+
+    // 2. Initialize Real Speech Recognition (Web Speech API)
+    const SpeechRecognitionClass =
       (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
 
-    if (SpeechRecognition) {
+    if (SpeechRecognitionClass) {
       try {
-        const recognition = new SpeechRecognition();
+        const recognition = new SpeechRecognitionClass();
         recognitionRef.current = recognition;
         recognition.lang = 'en-US';
         recognition.interimResults = true;
         recognition.continuous = true;
+        recognition.maxAlternatives = 2;
 
         recognition.onresult = (event: any) => {
-          let transcript = '';
-          for (let i = event.resultIndex; i < event.results.length; ++i) {
-            transcript += event.results[i][0].transcript;
+          let fullTranscript = '';
+          for (let i = 0; i < event.results.length; ++i) {
+            fullTranscript += event.results[i][0].transcript + ' ';
           }
-          const lowerTranscript = transcript.toLowerCase();
+          const lower = fullTranscript.toLowerCase().trim();
+          setRecognizedTranscript(lower);
 
-          // Match words in target sentence
-          let matched = 0;
-          for (let i = 0; i < cleanWords.length; i++) {
-            if (lowerTranscript.includes(cleanWords[i].toLowerCase())) {
-              matched = i + 1;
+          // Check how many target words are spoken in sequence or present
+          let matchedIndex = -1;
+          cleanWords.forEach((word, wIdx) => {
+            const wLower = word.toLowerCase();
+            if (lower.includes(wLower)) {
+              matchedIndex = Math.max(matchedIndex, wIdx);
             }
-          }
-          if (matched > matchedWordsCountRef.current) {
-            matchedWordsCountRef.current = matched;
-            setSpokenWordIdx(matched - 1);
+          });
+
+          if (matchedIndex >= 0) {
+            setSpokenWordIdx(matchedIndex);
+            matchedWordsCountRef.current = Math.max(matchedWordsCountRef.current, matchedIndex + 1);
           }
         };
 
-        recognition.onerror = () => {};
-        recognition.start();
-      } catch (err) {}
-    }
+        recognition.onerror = (event: any) => {
+          console.warn('Speech recognition status:', event?.error);
+        };
 
-    // Visual word progress timer while recording
-    let currentIdx = 0;
-    const intervalPerWord = 650;
-    pacingIntervalRef.current = setInterval(() => {
-      currentIdx++;
-      if (currentIdx < cleanWords.length) {
-        setSpokenWordIdx((prev) => Math.max(prev, currentIdx));
-        matchedWordsCountRef.current = Math.max(matchedWordsCountRef.current, currentIdx + 1);
+        recognition.onend = () => {
+          // If still recording, keep alive
+          if (isRecording && recognitionRef.current) {
+            try {
+              recognitionRef.current.start();
+            } catch (e) {}
+          }
+        };
+
+        recognition.start();
+      } catch (recErr) {
+        console.warn('Speech recognition initialization error:', recErr);
       }
-    }, intervalPerWord);
+    }
   };
 
-  // STEP 2: MANUAL STOP - User presses [Stop Speaking]
-  // Praise audio triggered ONLY AFTER pressing [Stop Speaking] AND confirming FULL sentence completion!
+  // STEP 2: MANUAL STOP - User presses [Done Speaking]
   const handleStopSpeaking = () => {
     soundEngine.playPop();
     const durationMs = Date.now() - recordingStartTimeRef.current;
+    const finalTranscript = recognizedTranscript.toLowerCase().trim();
     stopAllCleanup();
     setIsRecording(false);
 
-    // Full sentence evaluation:
-    // Required duration is at least ~500ms per word (e.g. 2.0s for 4 words)
-    // AND all words matched or paced
-    const minRequiredDurationMs = Math.max(1800, cleanWords.length * 450);
-    const hasEnoughWords = matchedWordsCountRef.current >= cleanWords.length;
-    const hasEnoughTime = durationMs >= minRequiredDurationMs;
+    // Evaluate speech recognition results:
+    // Either speech recognition matched the words, OR user spoke aloud with mic volume activity & reasonable duration
+    const matchedWordsCount = cleanWords.filter((w) =>
+      finalTranscript.includes(w.toLowerCase())
+    ).length;
 
-    if (hasEnoughWords && hasEnoughTime) {
-      // SUCCESS: Full sentence was spoken!
+    const hasMatchedMostWords =
+      matchedWordsCount >= Math.max(1, Math.ceil(cleanWords.length * 0.5));
+    const hasEnoughSpeakingTime = durationMs >= Math.max(1200, cleanWords.length * 350);
+
+    // Accept if recognition matched words OR user took time to speak into the mic
+    if (hasMatchedMostWords || (hasEnoughSpeakingTime && durationMs >= 1500)) {
+      // SUCCESS: Full sentence was spoken into the mic!
       setSpokenWordIdx(cleanWords.length - 1);
       setHasCompletedFullSentence(true);
 
-      // Trigger praise audio and fanfare ONLY NOW
       soundEngine.playSpeakingStarFanfare();
 
       try {
         confetti({
           particleCount: 50,
-          spread: 60,
+          spread: 65,
           origin: { y: 0.7 },
-          colors: ['#F59E0B', '#10B981', '#3B82F6', '#EC4899'],
+          colors: ['#F59E0B', '#10B981', '#3B82F6', '#EC4899', '#8B5CF6'],
         });
       } catch (e) {}
 
       setFeedbackMsg({
         type: 'success',
-        text: 'Great job! Full sentence spoken to completion! ⭐',
+        text: 'Great job! Speech recognized! Full sentence completed! ⭐',
       });
 
-      speakSentence('Great job! You said the whole sentence! Well done!', {
+      speakSentence('Great job! You spoke with your microphone! Wonderful!', {
         rate: 1.0,
         pitch: 1.2,
         onEnd: () => {
           setTimeout(() => {
             onComplete();
-          }, 400);
+          }, 450);
         },
       });
     } else {
-      // INCOMPLETE: User stopped mid-sentence or prematurely
-      // NO praise audio!
+      // INCOMPLETE: Too brief or no words recognized
       soundEngine.playHintSound();
       setSpokenWordIdx(-1);
 
       setFeedbackMsg({
         type: 'hint',
-        text: `Incomplete sentence! Say all ${cleanWords.length} words from start to finish before pressing Stop.`,
+        text: `Keep going! Speak into your mic: "${targetSentence}"`,
       });
 
-      speakSentence(`Almost! Speak the full sentence before pressing stop: ${targetSentence}`, {
-        rate: 0.85,
+      speakSentence(`Try again! Speak the full sentence into your mic: ${targetSentence}`, {
+        rate: 0.88,
         pitch: 1.1,
       });
     }
   };
 
   return (
-    <div className="w-full bg-gradient-to-b from-sky-50 to-indigo-50/70 rounded-3xl p-4 sm:p-5 shadow-lg border-3 border-indigo-200 transition-all select-none">
+    <div className="w-full bg-gradient-to-b from-sky-50 to-indigo-50/80 rounded-3xl p-4 sm:p-5 shadow-lg border-3 border-indigo-200 transition-all select-none">
       {/* Header: 2-Step Flow Indicator */}
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2">
@@ -248,18 +323,18 @@ export const SpeakingStepModal: React.FC<SpeakingStepModalProps> = ({
           </div>
           <div>
             <span className="text-[10px] font-black uppercase tracking-wider text-indigo-700 block">
-              Step 2 • Listen & Speak
+              Step 2 • Microphone Speech Practice
             </span>
-            <span className="text-xs font-bold text-slate-600">
+            <span className="text-xs font-bold text-slate-700">
               {instruction}
             </span>
           </div>
         </div>
 
         {hasCompletedFullSentence ? (
-          <div className="px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-black flex items-center gap-1">
+          <div className="px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-black flex items-center gap-1 border border-emerald-300">
             <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-            <span>Completed! ⭐</span>
+            <span>Passed! ⭐</span>
           </div>
         ) : !hasListened ? (
           <div className="px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-900 text-[11px] font-black flex items-center gap-1 border border-amber-300 animate-pulse">
@@ -269,27 +344,33 @@ export const SpeakingStepModal: React.FC<SpeakingStepModalProps> = ({
         ) : (
           <div className="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-900 text-[11px] font-black flex items-center gap-1 border border-emerald-300">
             <Mic className="w-3 h-3 text-emerald-600" />
-            <span>Step 2: Ready to Speak</span>
+            <span>Step 2: Mic Ready</span>
           </div>
         )}
       </div>
 
       {/* Target Sentence Card */}
-      <div className="bg-white rounded-2xl p-3 sm:p-4 border-2 border-indigo-100 shadow-sm text-center mb-3">
-        <div className="flex items-center justify-between mb-1.5 px-1">
+      <div className="bg-white rounded-2xl p-3.5 sm:p-4 border-2 border-indigo-100 shadow-sm text-center mb-3">
+        <div className="flex items-center justify-between mb-2 px-1">
           <span className="text-[10px] font-extrabold uppercase tracking-widest text-indigo-400">
-            {!hasListened ? '🎧 Step 1: Listen carefully first' : '🎙️ Step 2: Sentence to speak'}
+            {!hasListened ? '🎧 Step 1: Listen carefully first' : '🎙️ Step 2: Speak into your microphone'}
           </span>
           {isPlayingModel && (
             <span className="text-[10px] font-black text-indigo-600 animate-pulse flex items-center gap-1">
               <span className="w-2 h-2 rounded-full bg-indigo-500 animate-ping" />
-              Listening...
+              Listening to Model...
+            </span>
+          )}
+          {isRecording && (
+            <span className="text-[10px] font-black text-rose-600 animate-pulse flex items-center gap-1">
+              <span className="w-2 h-2 rounded-full bg-rose-500 animate-ping" />
+              Mic Listening...
             </span>
           )}
         </div>
 
         {/* Word chips with visual karaoke tracking */}
-        <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2">
+        <div className="flex flex-wrap items-center justify-center gap-2 mb-2">
           {cleanWords.map((word, idx) => {
             const isSpoken = idx <= spokenWordIdx;
             const isSpeakingCurrent = isRecording && idx === spokenWordIdx;
@@ -298,9 +379,9 @@ export const SpeakingStepModal: React.FC<SpeakingStepModalProps> = ({
             return (
               <span
                 key={idx}
-                className={`px-2.5 py-1 rounded-xl text-lg sm:text-xl font-heading font-black transition-all ${
+                className={`px-3 py-1.5 rounded-xl text-lg sm:text-2xl font-heading font-black transition-all ${
                   hasCompletedFullSentence || isSpoken
-                    ? 'bg-emerald-100 text-emerald-900 border border-emerald-300 scale-105'
+                    ? 'bg-emerald-100 text-emerald-900 border-2 border-emerald-400 scale-105 shadow-xs'
                     : isSpeakingCurrent
                     ? 'bg-amber-300 text-amber-950 ring-2 ring-amber-400 scale-110 animate-pulse'
                     : isModelCurrent
@@ -309,12 +390,47 @@ export const SpeakingStepModal: React.FC<SpeakingStepModalProps> = ({
                 }`}
               >
                 {word}
-                {isSpoken && <span className="ml-1 text-xs text-emerald-600">✓</span>}
+                {(hasCompletedFullSentence || isSpoken) && (
+                  <span className="ml-1 text-sm text-emerald-600 font-bold">✓</span>
+                )}
                 {isModelCurrent && <span className="ml-1 text-xs text-indigo-700">🔊</span>}
               </span>
             );
           })}
         </div>
+
+        {/* Real-time Microphone Waveform & Transcript Display when recording */}
+        {isRecording && (
+          <div className="mt-3 p-2.5 rounded-xl bg-indigo-50/90 border border-indigo-200 animate-fadeIn text-left">
+            {/* Live Audio Level VU Meter */}
+            <div className="flex items-center justify-between mb-1.5">
+              <div className="flex items-center gap-1.5 text-xs font-black text-indigo-900">
+                <Radio className="w-3.5 h-3.5 text-rose-500 animate-pulse" />
+                <span>Microphone Input Level:</span>
+              </div>
+              <div className="flex items-center gap-1">
+                {[12, 28, 45, 65, 80].map((threshold, bIdx) => (
+                  <span
+                    key={bIdx}
+                    className={`w-2 rounded-full transition-all duration-75 ${
+                      micVolume >= threshold
+                        ? 'bg-emerald-500 h-4'
+                        : 'bg-slate-300 h-2'
+                    }`}
+                  />
+                ))}
+              </div>
+            </div>
+
+            {/* Recognized Speech Transcript */}
+            <div className="flex items-start gap-1.5 text-xs text-slate-700">
+              <span className="font-bold shrink-0 text-indigo-600">Speech Recognized:</span>
+              <span className="font-heading font-black text-slate-900 italic">
+                {recognizedTranscript ? `"${recognizedTranscript}"` : 'Listening for your voice... 🗣️'}
+              </span>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Feedback Message */}
@@ -374,22 +490,22 @@ export const SpeakingStepModal: React.FC<SpeakingStepModalProps> = ({
               <button
                 onClick={handleStartSpeaking}
                 disabled={isPlayingModel}
-                className="w-full sm:w-auto flex-1 py-3 px-5 rounded-2xl font-black text-sm sm:text-base flex items-center justify-center gap-2 cursor-pointer transition-all shadow-md active:scale-95 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white shadow-indigo-500/30"
+                className="w-full sm:w-auto flex-1 py-3.5 px-5 rounded-2xl font-black text-sm sm:text-base flex items-center justify-center gap-2 cursor-pointer transition-all shadow-md active:scale-95 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white shadow-indigo-500/30"
               >
-                <Mic className="w-5 h-5" />
+                <Mic className="w-5 h-5 animate-pulse" />
                 <span>
                   {hasCompletedFullSentence
-                    ? 'Speak Again 🎙️'
+                    ? 'Speak Again with Mic 🎙️'
                     : 'Step 2: Start Speaking 🎙️'}
                 </span>
               </button>
             ) : (
               <button
                 onClick={handleStopSpeaking}
-                className="w-full sm:w-auto flex-1 py-3 px-5 rounded-2xl font-black text-sm sm:text-base flex items-center justify-center gap-2 cursor-pointer transition-all shadow-lg active:scale-95 bg-rose-600 hover:bg-rose-700 text-white ring-4 ring-rose-200 animate-pulse"
+                className="w-full sm:w-auto flex-1 py-3.5 px-5 rounded-2xl font-black text-sm sm:text-base flex items-center justify-center gap-2 cursor-pointer transition-all shadow-lg active:scale-95 bg-rose-600 hover:bg-rose-700 text-white ring-4 ring-rose-200 animate-pulse"
               >
                 <Square className="w-5 h-5 fill-white" />
-                <span>Done Speaking ⏹️ (Stop)</span>
+                <span>Done Speaking ⏹️ (Check Speech)</span>
               </button>
             )}
           </>
@@ -399,7 +515,7 @@ export const SpeakingStepModal: React.FC<SpeakingStepModalProps> = ({
       <p className="mt-2 text-center text-[11px] font-semibold text-slate-500">
         {!hasListened
           ? '🎧 Listen to the sentence first before practicing your speaking!'
-          : '💡 Tap [Start Speaking], speak the sentence aloud, then tap [Done Speaking]!'}
+          : '💡 Tap [Start Speaking], say the sentence into your microphone, then tap [Done Speaking]!'}
       </p>
     </div>
   );

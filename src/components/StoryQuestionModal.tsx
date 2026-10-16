@@ -117,18 +117,26 @@ export const StoryQuestionModal: React.FC<StoryQuestionModalProps> = ({
     }
   };
 
+  const correctChoice = question.choices.find((c) => c.isCorrect) || question.choices[0];
+  const firstLetter = correctChoice.text.trim().charAt(0).toUpperCase();
+
   return (
     <div className="w-full bg-white/95 backdrop-blur-md rounded-3xl p-4 sm:p-5 shadow-lg border-2 border-amber-200/80 transition-all select-none">
       {/* Top Header with Voice button */}
       <div className="flex items-center justify-between gap-3 mb-2.5">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center text-amber-700 font-bold text-sm">
-            ?
+          <div className="w-8 h-8 rounded-full bg-amber-400 text-amber-950 flex items-center justify-center font-heading font-black text-sm shadow-xs border border-amber-500 shrink-0">
+            {firstLetter}
           </div>
           <div>
-            <span className="text-[10px] font-black uppercase tracking-wider text-amber-600 block">
-              Step 1 • Sentence Quiz
-            </span>
+            <div className="flex items-center gap-1.5">
+              <span className="text-[10px] font-black uppercase tracking-wider text-amber-600 block">
+                Step 1 • Sentence Quiz
+              </span>
+              <span className="text-[10px] font-extrabold text-amber-800 bg-amber-100 px-1.5 py-0.5 rounded-md border border-amber-200">
+                Clue: Starts with &apos;{firstLetter}&apos;
+              </span>
+            </div>
             <span className="text-xs font-bold text-slate-700">
               {question.promptText}
             </span>

@@ -1,14 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { StampData } from '../types/story';
 import { soundEngine, speakSentence } from '../utils/audio';
-import { Volume2, Award, RotateCcw, Sparkles, Music, Star, Heart, Compass } from 'lucide-react';
+import { Volume2, Award, RotateCcw, Sparkles, Star, Heart, Compass, BookOpen, Gamepad2 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { BluebirdIcon } from './BluebirdIcon';
+import { FrogIcon } from './FrogIcon';
+import { BasketIcon } from './BasketIcon';
+import { STORY_PAGES } from '../data/storyData';
 
 interface ResultScreenProps {
   stamps: StampData[];
   onReadAgain: () => void;
-  onOpenMiniGame: () => void;
+  onOpenWordAdventure: (tab?: 'garden' | 'games') => void;
 }
 
 const STICKER_ANIMALS = [
@@ -23,7 +26,7 @@ const STICKER_ANIMALS = [
 export const ResultScreen: React.FC<ResultScreenProps> = ({
   stamps,
   onReadAgain,
-  onOpenMiniGame,
+  onOpenWordAdventure,
 }) => {
   const [selectedAnimal, setSelectedAnimal] = useState(STICKER_ANIMALS[0]);
   const [isSpeakingSentence, setIsSpeakingSentence] = useState(false);
@@ -106,11 +109,49 @@ export const ResultScreen: React.FC<ResultScreenProps> = ({
         <span>Completed All 4 Stages! 🌲 Entrance ➔ 🌳 Deep Forest ➔ 🏡 Cabin ➔ 🛏️ Room</span>
       </div>
 
-      <p className="text-sm sm:text-base font-black text-amber-800 bg-amber-100/90 px-4 py-1.5 rounded-full border border-amber-300 mb-5 shadow-xs flex items-center gap-2">
+      <p className="text-sm sm:text-base font-black text-amber-800 bg-amber-100/90 px-4 py-1.5 rounded-full border border-amber-300 mb-4 shadow-xs flex items-center gap-2">
         <Sparkles className="w-4 h-4 text-amber-500" />
         You collected {stamps.length} / 8 Chase Stamps!
         <Sparkles className="w-4 h-4 text-amber-500" />
       </p>
+
+      {/* Bunny's Friendly Completion Invitation Card */}
+      <div className="w-full bg-gradient-to-r from-amber-100 via-orange-50 to-amber-100 rounded-3xl p-4 sm:p-5 shadow-xl border-4 border-amber-300 mb-5 text-center flex flex-col items-center">
+        <div className="flex items-center gap-2 mb-1.5">
+          <span className="text-3xl animate-bounce">🐰</span>
+          <h2 className="text-xl sm:text-2xl font-black font-heading text-amber-950">
+            Hooray! You finished the story!
+          </h2>
+        </div>
+        <p className="text-sm font-extrabold text-amber-900 mb-4 max-w-md">
+          "Now let's play with the words you discovered!"
+        </p>
+
+        {/* Two Primary Choices */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full max-w-md">
+          <button
+            onClick={() => {
+              soundEngine.playPop();
+              onOpenWordAdventure('garden');
+            }}
+            className="py-3.5 px-4 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 active:scale-95 text-white font-black text-base shadow-md shadow-emerald-500/25 flex items-center justify-center gap-2 cursor-pointer transition-all border-2 border-white"
+          >
+            <BookOpen className="w-5 h-5" />
+            <span>Review Words 🌸</span>
+          </button>
+
+          <button
+            onClick={() => {
+              soundEngine.playPop();
+              onOpenWordAdventure('games');
+            }}
+            className="py-3.5 px-4 rounded-2xl bg-gradient-to-r from-amber-400 via-amber-500 to-orange-400 hover:from-amber-500 hover:to-orange-500 active:scale-95 text-white font-black text-base shadow-md shadow-amber-500/25 flex items-center justify-center gap-2 cursor-pointer transition-all border-2 border-white animate-pulse"
+          >
+            <Gamepad2 className="w-5 h-5" />
+            <span>Play Word Games 🎮</span>
+          </button>
+        </div>
+      </div>
 
       {/* 8-Stamp Collector Reward Passport Card */}
       <div className="w-full bg-white rounded-3xl p-4 sm:p-5 shadow-xl border-4 border-amber-200 mb-5">
@@ -139,6 +180,10 @@ export const ResultScreen: React.FC<ResultScreenProps> = ({
               >
                 {stamp.animal === 'Bluebird' || stamp.icon === '🐦' || stamp.icon === 'bluebird' ? (
                   <BluebirdIcon size={26} />
+                ) : stamp.animal === 'Frog' || stamp.icon === '🐸' || stamp.icon === '🪜' || stamp.id === 'stamp-6' ? (
+                  <FrogIcon size={26} />
+                ) : stamp.icon === '🧺' || stamp.animal === 'Calico Cat' ? (
+                  <BasketIcon size={26} />
                 ) : (
                   <span className="select-none leading-none filter drop-shadow-xs">{stamp.icon}</span>
                 )}
@@ -149,6 +194,53 @@ export const ResultScreen: React.FC<ResultScreenProps> = ({
               <span className="text-[8px] text-amber-700 font-bold truncate max-w-full">
                 Stage {stamp.stageNumber || Math.ceil((idx + 1) / 2)} • {stamp.locationName}
               </span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Bunny's 8 Adventure Scene Memories (Guarantees all 8 scene images, including the 6th under the porch, display flawlessly) */}
+      <div className="w-full bg-white rounded-3xl p-4 sm:p-5 shadow-xl border-4 border-amber-200 mb-5">
+        <div className="flex items-center justify-between border-b border-amber-100 pb-2 mb-3">
+          <div className="flex items-center gap-2">
+            <span className="text-xl">📸</span>
+            <h2 className="font-heading font-black text-slate-800 text-base sm:text-lg">
+              Bunny's 8 Adventure Scene Memories
+            </h2>
+          </div>
+          <span className="text-xs font-bold text-amber-900 bg-amber-100 px-2.5 py-0.5 rounded-full border border-amber-300">
+            8 Story Scenes 🌸
+          </span>
+        </div>
+
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+          {STORY_PAGES.map((page) => (
+            <div
+              key={page.pageNumber}
+              className="group relative rounded-2xl overflow-hidden border-2 border-amber-200 shadow-xs bg-amber-50/50 flex flex-col hover:shadow-md transition-all"
+            >
+              <div className="relative w-full h-24 sm:h-28 overflow-hidden bg-amber-100">
+                <img
+                  src={page.imageUrl}
+                  alt={page.text}
+                  referrerPolicy="no-referrer"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                />
+                <span className="absolute top-1.5 left-1.5 px-2 py-0.5 rounded-full bg-black/60 text-white font-black text-[10px] backdrop-blur-xs">
+                  #{page.pageNumber}
+                </span>
+                <span className="absolute bottom-1.5 right-1.5 px-2 py-0.5 rounded-full bg-white/95 text-amber-950 font-black text-[9px] border border-amber-300 shadow-xs">
+                  {page.stage.icon} {page.stage.name}
+                </span>
+              </div>
+              <div className="p-2 flex flex-col justify-between flex-1 text-left bg-white">
+                <p className="text-[11px] font-black text-slate-800 leading-tight line-clamp-1 mb-0.5">
+                  {page.text}
+                </p>
+                <span className="text-[9px] font-bold text-amber-700 truncate">
+                  {page.stamp.locationName}
+                </span>
+              </div>
             </div>
           ))}
         </div>
@@ -183,6 +275,8 @@ export const ResultScreen: React.FC<ResultScreenProps> = ({
               >
                 {animal.id === 'bird' ? (
                   <BluebirdIcon size={34} className="mb-1" />
+                ) : animal.id === 'frog' ? (
+                  <FrogIcon size={34} className="mb-1" />
                 ) : (
                   <span className="text-3xl mb-1 filter drop-shadow-xs">{animal.icon}</span>
                 )}
@@ -203,6 +297,8 @@ export const ResultScreen: React.FC<ResultScreenProps> = ({
             <span className="px-3 py-1 rounded-xl bg-rose-100 text-rose-700 border-2 border-rose-300 inline-flex items-center gap-1.5 shadow-xs animate-pulse">
               {selectedAnimal.id === 'bird' ? (
                 <BluebirdIcon size={26} />
+              ) : selectedAnimal.id === 'frog' ? (
+                <FrogIcon size={26} />
               ) : (
                 <span>{selectedAnimal.icon}</span>
               )}
@@ -246,12 +342,12 @@ export const ResultScreen: React.FC<ResultScreenProps> = ({
         <button
           onClick={() => {
             soundEngine.playPop();
-            onOpenMiniGame();
+            onOpenWordAdventure('garden');
           }}
           className="py-3.5 px-6 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 active:scale-95 text-white font-extrabold text-base shadow-md shadow-emerald-500/30 flex items-center justify-center gap-2 cursor-pointer transition-all"
         >
-          <Music className="w-5 h-5" />
-          <span>Sound Mysteries 🎧</span>
+          <Sparkles className="w-5 h-5 text-amber-300 fill-amber-300" />
+          <span>Word Adventure 🌸</span>
         </button>
       </div>
     </div>

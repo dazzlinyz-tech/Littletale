@@ -56,6 +56,7 @@ export interface StoryPage {
   pageNumber: number;
   stage: StageInfo;
   text: string;
+  storyNarrative: string;
   keyWords: string[];
   readSpeedText?: string;
   question: StoryQuestion;
@@ -76,12 +77,14 @@ export interface StoryPage {
     y: number;
     hintDescription: string;
   };
+  imageUrl: string;
 }
 
 export interface SoundMysteryCase {
   id: string;
   title: string;
   stageName: string;
+  imageUrl?: string;
   environmentName: string;
   environmentSoundType: 'rustling_leaves' | 'creaking_door' | 'river_stream' | 'fireplace_wind';
   animalSoundType: 'bird' | 'frog' | 'duck' | 'cat' | 'bear' | 'squirrel';

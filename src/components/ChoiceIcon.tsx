@@ -2,6 +2,8 @@ import React from 'react';
 import { FenceIcon } from './FenceIcon';
 import { MushroomIcon } from './MushroomIcon';
 import { BluebirdIcon } from './BluebirdIcon';
+import { FrogIcon } from './FrogIcon';
+import { BasketIcon } from './BasketIcon';
 
 interface ChoiceIconProps {
   icon: string;
@@ -24,6 +26,14 @@ export const ChoiceIcon: React.FC<ChoiceIconProps> = ({
 
   if (icon === 'bluebird' || icon === 'bird' || icon === '🐦') {
     return <BluebirdIcon size={size} className={className} />;
+  }
+
+  if (icon === 'frog' || icon === '🐸' || icon === '🪜') {
+    return <FrogIcon size={size} className={className} />;
+  }
+
+  if (icon === 'basket' || icon === '🧺') {
+    return <BasketIcon size={size} className={className} />;
   }
 
   return (

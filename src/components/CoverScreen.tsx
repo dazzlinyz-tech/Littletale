@@ -6,12 +6,12 @@ import { BluebirdIcon } from './BluebirdIcon';
 
 interface CoverScreenProps {
   onStartStory: () => void;
-  onOpenSoundGame: () => void;
+  onOpenWordAdventure: () => void;
 }
 
 export const CoverScreen: React.FC<CoverScreenProps> = ({
   onStartStory,
-  onOpenSoundGame,
+  onOpenWordAdventure,
 }) => {
   const [bushShaking, setBushShaking] = useState(false);
   const [bunnyPeek, setBunnyPeek] = useState(false);
@@ -98,78 +98,72 @@ export const CoverScreen: React.FC<CoverScreenProps> = ({
         </div>
       </div>
 
-      {/* 2. THE MAIN PICTURE-BOOK ILLUSTRATION CARD
-          Bunny is placed with clean vertical clearance. No text overlays Bunny's face or body! */}
-      <div className="w-full max-w-sm rounded-3xl bg-gradient-to-b from-[#FDF8EE] via-[#FFFDF5] to-[#FBF2DE] p-4 shadow-2xl border-4 border-amber-300/80 flex flex-col items-center justify-between my-auto">
-        <div className="relative w-full h-56 rounded-2xl bg-gradient-to-b from-sky-200 via-emerald-100 to-emerald-200 p-3 border-2 border-emerald-300/60 overflow-hidden flex flex-col justify-between items-center shadow-inner">
-          {/* Top Sky Bar: Sun & Cloud */}
-          <div className="w-full flex justify-between items-start z-10">
-            <span className="text-3xl animate-bounce">☀️</span>
-            <span className="text-2xl opacity-75">☁️</span>
-          </div>
+      {/* 2. THE MAIN PICTURE-BOOK ILLUSTRATION CARD */}
+      <div className="w-full max-w-sm rounded-3xl bg-gradient-to-b from-[#FDF8EE] via-[#FFFDF5] to-[#FBF2DE] p-3.5 sm:p-4 shadow-2xl border-4 border-amber-300 flex flex-col items-center justify-between my-auto">
+        <div
+          onClick={handleBushClick}
+          className={`relative w-full h-64 sm:h-72 rounded-2xl overflow-hidden border-2 border-amber-300/80 shadow-md cursor-pointer transition-transform duration-300 group ${
+            bushShaking ? 'scale-105 rotate-1' : 'hover:scale-[1.02]'
+          }`}
+        >
+          {/* Authentic Children's Storybook Watercolor Illustration */}
+          <img
+            src="/src/assets/images/storybook_bunny_adventure_1792116362569.jpg"
+            alt="Where is Bunny? Storybook Adventure"
+            referrerPolicy="no-referrer"
+            className="w-full h-full object-cover select-none pointer-events-none"
+          />
 
-          {/* Center Area: Peek-a-boo Bunny & Rustling Bush (Completely Clear Sightline) */}
-          <div
-            onClick={handleBushClick}
-            className={`relative z-20 cursor-pointer flex flex-col items-center transition-transform ${
-              bushShaking ? 'scale-110 rotate-3' : 'hover:scale-105'
-            }`}
-          >
-            {/* Peek-a-boo Bunny rising cleanly above the bush foliage */}
-            <div
-              className={`transition-all duration-300 flex flex-col items-center ${
-                bunnyPeek
-                  ? '-translate-y-2 opacity-100 scale-110'
-                  : 'translate-y-6 opacity-0 pointer-events-none'
-              }`}
-            >
-              <span className="text-5xl filter drop-shadow-sm animate-ear-wiggle">
-                🐰
-              </span>
-            </div>
-
-            {/* Bush Foliage */}
-            <div className="flex items-center justify-center -mt-3">
-              <span className="text-6xl filter drop-shadow-md">🌳</span>
-            </div>
-
-            {/* Tap Guide Pill strictly BELOW the bush */}
-            <span className="mt-1 text-[10px] font-bold text-emerald-900 bg-white/90 px-2.5 py-0.5 rounded-full border border-emerald-300 shadow-xs whitespace-nowrap">
-              Tap the bush! 🍃
+          {/* Interactive Tap Pill Overlay */}
+          <div className="absolute bottom-2.5 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1.5 px-3 py-1 bg-white/95 backdrop-blur-xs rounded-full border border-amber-300 shadow-md">
+            <span className="text-xs">🐰</span>
+            <span className="text-[11px] font-black text-amber-950 whitespace-nowrap">
+              Tap Bunny to Play! ✨
             </span>
           </div>
 
-          {/* Bottom Bar: 4-Stage Signpost & Woodland Friends (Strictly BELOW Bunny) */}
-          <div className="w-full flex justify-between items-end z-10 pt-1.5 border-t border-emerald-300/40">
-            <button
-              onClick={handleSignpostClick}
-              className="px-2.5 py-1 rounded-xl bg-amber-100/90 hover:bg-amber-200 border border-amber-300 text-[10px] font-black text-amber-900 flex items-center gap-1 cursor-pointer shadow-xs active:scale-95 transition-all"
-            >
-              <Compass className="w-3 h-3 text-amber-700" />
-              <span>{currentStage.icon} Stage {currentStage.id}: {currentStage.name}</span>
-            </button>
-
-            <div className="flex gap-2 text-2xl">
-              <span
-                className="cursor-pointer hover:scale-125 transition-transform"
-                onClick={() => handleAnimalClick('bear', '🐻 Bear: "Let\'s chase Bunny!"')}
-              >
-                🐻
-              </span>
-              <span
-                className="cursor-pointer hover:scale-125 transition-transform"
-                onClick={() => handleAnimalClick('squirrel', '🐿️ Squirrel: "He ran that way!"')}
-              >
-                🐿️
-              </span>
-              <span
-                className="cursor-pointer hover:scale-125 transition-transform inline-flex items-center"
-                onClick={() => handleAnimalClick('bird', '💙 Bluebird: "Tweet! Follow me!"')}
-                title="Bluebird"
-              >
-                <BluebirdIcon size={26} />
-              </span>
+          {/* Tap sparkle effect */}
+          {bunnyPeek && (
+            <div className="absolute inset-0 bg-amber-200/20 z-10 flex items-center justify-center animate-pulse">
+              <div className="px-4 py-1.5 rounded-full bg-white/95 text-amber-950 font-black text-sm border-2 border-amber-400 shadow-xl animate-bounce">
+                🐰 "Let&apos;s explore together! 💖"
+              </div>
             </div>
+          )}
+        </div>
+
+        {/* 4-Stage Signpost & Woodland Friends Bar */}
+        <div className="w-full flex justify-between items-center z-10 pt-2.5 px-1">
+          <button
+            onClick={handleSignpostClick}
+            className="px-2.5 py-1.5 rounded-xl bg-amber-100 hover:bg-amber-200 border border-amber-300 text-[11px] font-black text-amber-900 flex items-center gap-1.5 cursor-pointer shadow-xs active:scale-95 transition-all"
+          >
+            <Compass className="w-3.5 h-3.5 text-amber-700" />
+            <span>{currentStage.icon} Stage {currentStage.id}: {currentStage.name}</span>
+          </button>
+
+          <div className="flex gap-2 text-2xl">
+            <span
+              className="cursor-pointer hover:scale-125 transition-transform"
+              onClick={() => handleAnimalClick('bear', '🐻 Bear: "Let\'s chase Bunny!"')}
+              title="Bear"
+            >
+              🐻
+            </span>
+            <span
+              className="cursor-pointer hover:scale-125 transition-transform"
+              onClick={() => handleAnimalClick('squirrel', '🐿️ Squirrel: "He ran that way!"')}
+              title="Squirrel"
+            >
+              🐿️
+            </span>
+            <span
+              className="cursor-pointer hover:scale-125 transition-transform inline-flex items-center"
+              onClick={() => handleAnimalClick('bird', '💙 Bluebird: "Tweet! Follow me!"')}
+              title="Bluebird"
+            >
+              <BluebirdIcon size={26} />
+            </span>
           </div>
         </div>
 
@@ -198,12 +192,12 @@ export const CoverScreen: React.FC<CoverScreenProps> = ({
         <button
           onClick={() => {
             soundEngine.playPop();
-            onOpenSoundGame();
+            onOpenWordAdventure();
           }}
-          className="w-full py-2.5 px-4 rounded-2xl bg-white hover:bg-emerald-50 active:scale-98 text-emerald-800 font-black text-sm border-2 border-emerald-300 flex items-center justify-center gap-2 cursor-pointer transition-all shadow-xs"
+          className="w-full py-3 px-4 rounded-2xl bg-white hover:bg-amber-50 active:scale-98 text-amber-950 font-black text-sm border-2 border-amber-300 flex items-center justify-center gap-2 cursor-pointer transition-all shadow-xs"
         >
-          <Music className="w-4 h-4 text-emerald-600" />
-          <span>Sound Mystery Detective 🎧</span>
+          <Sparkles className="w-4 h-4 text-amber-500 fill-amber-400" />
+          <span>Bunny's Word Adventure 🌸</span>
         </button>
       </div>
     </div>

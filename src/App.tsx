@@ -13,7 +13,7 @@ import { StoryQuestionModal } from './components/StoryQuestionModal';
 import { SpeakingStepModal } from './components/SpeakingStepModal';
 import { ResultScreen } from './components/ResultScreen';
 import { CoverScreen } from './components/CoverScreen';
-import { AnimalSoundGameModal } from './components/AnimalSoundGameModal';
+import { WordAdventureModal } from './components/WordAdventure/WordAdventureModal';
 import { Volume2, ChevronRight, ChevronLeft, Sparkles, BookOpen, CheckCircle2, Lock } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
@@ -34,8 +34,9 @@ export default function App() {
   const [speakingCompletedMap, setSpeakingCompletedMap] = useState<Record<number, boolean>>({});
   const [bunnyHintMessage, setBunnyHintMessage] = useState<string | null>(null);
 
-  // Mini-game modal state
-  const [isSoundGameOpen, setIsSoundGameOpen] = useState<boolean>(false);
+  // Bunny's Word Adventure modal state
+  const [isWordAdventureOpen, setIsWordAdventureOpen] = useState<boolean>(false);
+  const [wordAdventureInitialTab, setWordAdventureInitialTab] = useState<'garden' | 'games'>('garden');
   const [quizSessionSeed] = useState<number>(() => (Math.random() < 0.5 ? 1 : 0));
 
   const currentPage = STORY_PAGES[currentPageIndex];
@@ -119,13 +120,32 @@ export default function App() {
   };
 
   const handleWordClick = (rawWord: string) => {
-    const cleanWord = rawWord.replace(/[.,?!]/g, '');
-    const def = WORDS_DICTIONARY[cleanWord];
+    const cleanWord = rawWord.replace(/[.,?!]/g, '').trim();
+    if (!cleanWord) return;
+
+    soundEngine.playPop();
+
+    // Look up in dictionary case-insensitively
+    const matchKey = Object.keys(WORDS_DICTIONARY).find(
+      (k) => k.toLowerCase() === cleanWord.toLowerCase()
+    );
+    const def = matchKey ? WORDS_DICTIONARY[matchKey] : null;
+
     if (def) {
       setSelectedWordData(def);
     } else {
-      soundEngine.playPop();
-      speakSentence(cleanWord, { rate: 0.8, pitch: 1.2 });
+      // Dynamic fallback definition for any unknown word
+      const fallbackDef: WordDefinition = {
+        word: cleanWord,
+        category: 'noun',
+        phonics: cleanWord.split(''),
+        phonicsAudioText: cleanWord.split('').join(' ... '),
+        definition: `A storybook word: "${cleanWord}". Listen carefully to its pronunciation!`,
+        emoji: '📖',
+        visualType: 'storyword',
+        example: `"${cleanWord}" in our storybook adventure.`,
+      };
+      setSelectedWordData(fallbackDef);
     }
   };
 
@@ -190,7 +210,10 @@ export default function App() {
             setCurrentPageIndex(0);
             setCurrentScreen('story');
           }}
-          onOpenSoundGame={() => setIsSoundGameOpen(true)}
+          onOpenWordAdventure={() => {
+            setWordAdventureInitialTab('garden');
+            setIsWordAdventureOpen(true);
+          }}
         />
       )}
 
@@ -224,12 +247,13 @@ export default function App() {
               <button
                 onClick={() => {
                   soundEngine.playPop();
-                  setIsSoundGameOpen(true);
+                  setWordAdventureInitialTab('garden');
+                  setIsWordAdventureOpen(true);
                 }}
-                className="w-9 h-9 rounded-full bg-emerald-100 hover:bg-emerald-200 text-emerald-800 flex items-center justify-center font-bold text-sm cursor-pointer shadow-xs border border-emerald-300 active:scale-95 transition-all"
-                title="Sound Mystery Game"
+                className="w-9 h-9 rounded-full bg-amber-100 hover:bg-amber-200 text-amber-900 flex items-center justify-center font-bold text-sm cursor-pointer shadow-xs border border-amber-300 active:scale-95 transition-all"
+                title="Bunny's Word Adventure"
               >
-                🎧
+                🌸
               </button>
 
               <button
@@ -263,18 +287,117 @@ export default function App() {
             )}
           </div>
 
-          {/* Story Text Card: Mystery placeholder before answering, revealed only AFTER quiz is correct! */}
+          {/* Picture Book Story Narrative: Large font, interactive clickable words for dictionary & speech */}
+          {currentPage.storyNarrative && (
+            <div className="w-full bg-gradient-to-r from-amber-50 via-orange-50/80 to-amber-50 rounded-3xl p-4 sm:p-5 shadow-sm border-3 border-amber-300/90 mb-3 animate-fadeIn">
+              <div className="flex items-center justify-between border-b border-amber-200/80 pb-2 mb-2.5">
+                <div className="flex items-center gap-2">
+                  <span className="text-xl sm:text-2xl">📖</span>
+                  <span className="text-xs sm:text-sm font-black uppercase tracking-wider text-amber-800">
+                    Storybook Scene {currentPage.pageNumber}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-[11px] font-bold text-amber-700 hidden sm:inline">
+                    Tap any word to hear & learn! 👆
+                  </span>
+                  <button
+                    onClick={() => speakSentence(currentPage.storyNarrative, { rate: 0.9, pitch: 1.1 })}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-400 hover:bg-amber-500 active:scale-95 text-amber-950 font-black text-xs shadow-xs cursor-pointer transition-all"
+                    title="Listen to storybook narration"
+                  >
+                    <Volume2 className="w-4 h-4" />
+                    <span>Listen 🔊</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Large, Beautiful Storybook Sentence with Clickable Words */}
+              <div className="flex items-center justify-center flex-wrap gap-x-2 sm:gap-x-3 gap-y-1.5 text-center py-1">
+                {currentPage.storyNarrative.split(' ').map((word, wIdx) => {
+                  const cleanWord = word.replace(/[.,?!]/g, '').trim();
+                  return (
+                    <button
+                      key={wIdx}
+                      type="button"
+                      onClick={() => handleWordClick(cleanWord)}
+                      className="font-heading font-extrabold text-xl sm:text-2xl md:text-3xl text-amber-950 px-2 py-0.5 rounded-xl hover:bg-amber-200 hover:text-amber-900 active:scale-95 transition-all cursor-pointer underline decoration-amber-400 decoration-3 underline-offset-4"
+                      title={`Tap to hear and learn "${cleanWord}"`}
+                    >
+                      {word}
+                    </button>
+                  );
+                })}
+              </div>
+
+              <div className="mt-2 flex items-center justify-center gap-1 text-[11px] font-bold text-amber-700/80 sm:hidden">
+                <Sparkles className="w-3 h-3 text-amber-500" />
+                <span>Tap any word to see its meaning & pronunciation!</span>
+              </div>
+            </div>
+          )}
+
+          {/* Story Text Card: First-Letter Hint before answering, revealed full sentence AFTER quiz is correct! */}
           {!isQuestionDone ? (
             <div className="w-full bg-gradient-to-r from-amber-50 to-orange-50/80 rounded-3xl p-3.5 sm:p-4 shadow-xs border-2 border-dashed border-amber-300 mb-2.5 text-center select-none transition-all">
-              <div className="flex items-center justify-center gap-2 mb-1">
-                <span className="text-xl">🔍</span>
-                <span className="text-2xl sm:text-3xl font-heading font-black text-amber-900 tracking-widest drop-shadow-xs">
-                  ? ? ? ? ?
+              {/* First Letter Clue Badge */}
+              <div className="flex items-center justify-center gap-2 mb-2 flex-wrap">
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-200/90 border-2 border-amber-400 shadow-xs">
+                  <Sparkles className="w-3.5 h-3.5 text-amber-700" />
+                  <span className="text-xs font-black text-amber-950 uppercase tracking-wide">
+                    First Letter Hint:
+                  </span>
+                  <span className="inline-flex items-center justify-center w-6 h-6 rounded-lg bg-amber-500 text-white font-heading font-black text-base shadow-xs animate-bounce">
+                    {currentPage.text.trim().charAt(0).toUpperCase()}
+                  </span>
+                </div>
+                <span className="text-xs font-bold text-amber-800">
+                  (Starts with &apos;{currentPage.text.trim().charAt(0).toUpperCase()}&apos;)
                 </span>
               </div>
+
+              {/* First-Letter Masked Sentence Preview */}
+              <div className="flex items-center justify-center flex-wrap gap-x-3 gap-y-1.5 mb-2 font-heading font-black text-lg sm:text-2xl text-amber-950 tracking-wider">
+                {currentPage.text.split(' ').map((w, wIdx) => {
+                  const punctMatch = w.match(/[.,?!]+$/);
+                  const punct = punctMatch ? punctMatch[0] : '';
+                  const letters = w.replace(/[.,?!]/g, '');
+
+                  if (wIdx === 0) {
+                    const firstChar = letters.charAt(0);
+                    const blanks = letters.length > 1 ? Array(letters.length - 1).fill('_').join(' ') : '';
+                    return (
+                      <span key={wIdx} className="inline-flex items-center bg-amber-100/80 px-2 py-0.5 rounded-xl border border-amber-300/80">
+                        <span className="text-amber-700 underline decoration-amber-500 font-extrabold mr-1 text-xl sm:text-2xl">
+                          {firstChar}
+                        </span>
+                        {blanks && (
+                          <span className="font-mono text-amber-700/70 tracking-widest text-base sm:text-xl">
+                            {blanks}
+                          </span>
+                        )}
+                        {punct && <span className="text-amber-900 ml-0.5">{punct}</span>}
+                      </span>
+                    );
+                  }
+
+                  const blanks = Array(Math.max(1, letters.length)).fill('_').join(' ');
+                  return (
+                    <span key={wIdx} className="inline-flex items-center">
+                      <span className="font-mono text-amber-700/60 tracking-widest text-base sm:text-xl">
+                        {blanks}
+                      </span>
+                      {punct && <span className="text-amber-900 ml-0.5">{punct}</span>}
+                    </span>
+                  );
+                })}
+              </div>
+
               <p className="text-xs sm:text-sm font-extrabold text-amber-800 flex items-center justify-center gap-1.5">
                 <Sparkles className="w-4 h-4 text-amber-500 animate-spin" />
-                <span>Look at the picture and choose the matching sentence below! ✨</span>
+                <span>
+                  Look at the picture and choose the sentence starting with &apos;{currentPage.text.trim().charAt(0).toUpperCase()}&apos; below! ✨
+                </span>
               </p>
             </div>
           ) : (
@@ -416,20 +539,31 @@ export default function App() {
             setCurrentPageIndex(0);
             setCurrentScreen('story');
           }}
-          onOpenMiniGame={() => setIsSoundGameOpen(true)}
+          onOpenWordAdventure={(tab = 'garden') => {
+            setWordAdventureInitialTab(tab);
+            setIsWordAdventureOpen(true);
+          }}
         />
       )}
 
       {/* ============================================================== */}
-      {/* MODALS: Visual & Phonics Dictionary & Sound Mystery Detective */}
+      {/* MODALS: Visual & Phonics Dictionary & Bunny's Word Adventure */}
       {/* ============================================================== */}
       <PhonicsDictionaryModal
         wordData={selectedWordData}
         onClose={() => setSelectedWordData(null)}
       />
 
-      {isSoundGameOpen && (
-        <AnimalSoundGameModal onClose={() => setIsSoundGameOpen(false)} />
+      {isWordAdventureOpen && (
+        <WordAdventureModal
+          initialTab={wordAdventureInitialTab}
+          onClose={() => setIsWordAdventureOpen(false)}
+          onNavigateToStory={() => {
+            setIsWordAdventureOpen(false);
+            setCurrentPageIndex(0);
+            setCurrentScreen('story');
+          }}
+        />
       )}
     </div>
   );
